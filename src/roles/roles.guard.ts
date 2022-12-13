@@ -33,8 +33,8 @@ export class RolesGuard implements CanActivate {
     }
     console.log(user['email']);
     const requestUserRole = user['role'];
-    console.log(requiredRoles);
-    console.log(requestUserRole);
+    // console.log(requiredRoles);
+    // console.log(requestUserRole);
 
     // const smth = context.switchToHttp().getRequest();
     // console.log(smth);
