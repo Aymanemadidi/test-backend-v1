@@ -8,7 +8,7 @@ import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { LoginUserInput } from './dto/login-user.input';
 import { User } from './entities/user.entity';
-import { AuthService } from '../common/services/auth.service';
+import { AuthService } from '../common/auth/services/auth.service';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 
