@@ -3,11 +3,11 @@ import { BuyerService } from './buyer.service';
 import { BuyerResolver } from './buyer.resolver';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Buyer, BuyerSchema } from './entities/buyer.entity';
-import { UserSchema } from 'src/users/entities/user.entity';
-import { CommonModule } from 'src/common/common.module';
-import { AuthService } from 'src/common/auth/services/auth.service';
-import { User } from 'src/users/entities/user.entity';
-import { UsersModule } from 'src/users/users.module';
+import { UserSchema } from '../users/entities/user.entity';
+import { CommonModule } from '../common/common.module';
+import { AuthService } from '../common/auth/services/auth.service';
+import { User } from '../users/entities/user.entity';
+import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [

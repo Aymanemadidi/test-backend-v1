@@ -1,7 +1,7 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Schema as MongooseSchema } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Role } from 'src/roles/enums/role.enum';
+import { Role } from '../../roles/enums/role.enum';
 @Schema()
 @ObjectType()
 export class User {

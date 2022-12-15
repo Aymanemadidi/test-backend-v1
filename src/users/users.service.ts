@@ -11,6 +11,8 @@ import { User } from './entities/user.entity';
 import { AuthService } from '../common/auth/services/auth.service';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
+import { CreateSellerInput } from 'src/seller/dto/create-seller.input';
+import { UpdateSellerInput } from 'src/seller/dto/update-seller.input';
 
 @Injectable()
 export class UsersService {
@@ -19,7 +21,7 @@ export class UsersService {
     private readonly userModel: Model<User>,
     private readonly authService: AuthService,
   ) {}
-  async create(createUserInput: CreateUserInput) {
+  async create(createUserInput: CreateUserInput | CreateSellerInput) {
     const user = await this.userModel
       .findOne({ email: createUserInput.email })
       .exec();
@@ -53,7 +55,10 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, updateUserInput: UpdateUserInput): Promise<User> {
+  async update(
+    id: string,
+    updateUserInput: UpdateUserInput | UpdateSellerInput,
+  ): Promise<User> {
     const existingUser = await this.userModel.findByIdAndUpdate(
       { _id: id },
       { $set: updateUserInput },

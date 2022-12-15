@@ -7,8 +7,8 @@ import { LoggedBuyerOutput } from './dto/loged-buyer.output';
 import { LoginBuyerInput } from './dto/login-buyer.input';
 import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/common/auth/jwt-auth.guard';
-import { Roles } from 'src/roles/roles.decorator';
-import { Role } from 'src/roles/enums/role.enum';
+import { Roles } from '../roles/roles.decorator';
+import { Role } from '../roles/enums/role.enum';
 
 @Resolver(() => Buyer)
 export class BuyerResolver {

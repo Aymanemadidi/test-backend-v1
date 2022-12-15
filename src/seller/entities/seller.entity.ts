@@ -1,8 +1,8 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Schema as MongooseSchema } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Role } from 'src/roles/enums/role.enum';
-import { TypeVendeur, TypeCompte } from 'src/enums';
+import { Role } from '../../roles/enums/role.enum';
+import { TypeVendeur, TypeCompte } from '../../enums';
 @Schema()
 @ObjectType()
 export class Seller {

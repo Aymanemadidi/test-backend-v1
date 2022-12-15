@@ -492,7 +492,7 @@ input UpdateSellerInput {
 
   """User hashed password"""
   password: String
-  _id: Int!
+  _id: String!
 }
 
 input LoginSellerInput {

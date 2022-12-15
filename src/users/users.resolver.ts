@@ -7,9 +7,9 @@ import { LoggedUserOutput } from './dto/logged-user.output';
 import { LoginUserInput } from './dto/login-user.input';
 import { UseGuards, UseInterceptors } from '@nestjs/common';
 import { JwtAuthGuard } from '../common/auth/jwt-auth.guard';
-import { OnlySameUserByIdAllowed } from 'src/common/user.interceptor';
+import { OnlySameUserByIdAllowed } from '../common/user.interceptor';
 import { Roles } from '../roles/roles.decorator';
-import { Role } from 'src/roles/enums/role.enum';
+import { Role } from '../roles/enums/role.enum';
 // import { LoginBuyerInput } from 'src/buyer/dto/login-buyer.input';
 // import { LoggedBuyerOutput } from 'src/buyer/dto/loged-buyer.output';
 

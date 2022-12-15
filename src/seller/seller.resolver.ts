@@ -6,9 +6,9 @@ import { UpdateSellerInput } from './dto/update-seller.input';
 import { LoggedSellerOutput } from './dto/loged-seller.output';
 import { LoginSellerInput } from './dto/login-seller.input';
 import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/common/auth/jwt-auth.guard';
-import { Roles } from 'src/roles/roles.decorator';
-import { Role } from 'src/roles/enums/role.enum';
+import { JwtAuthGuard } from '../common/auth/jwt-auth.guard';
+import { Roles } from '../roles/roles.decorator';
+import { Role } from '../roles/enums/role.enum';
 
 @Resolver(() => Seller)
 export class SellerResolver {

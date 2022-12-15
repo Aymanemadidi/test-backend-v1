@@ -11,29 +11,29 @@ import { Seller } from './entities/seller.entity';
 import { AuthService } from '../common/auth/services/auth.service';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class SellerService {
   constructor(
     @InjectModel(Seller.name)
     private readonly sellerModel: Model<Seller>,
-    @InjectModel(User.name)
-    private readonly userModel: Model<User>,
+    // @InjectModel(User.name)
+    // private readonly userModel: Model<User>,
     private readonly authService: AuthService,
   ) {}
   async create(createSellerInput: CreateSellerInput) {
-    const user = await this.userModel
-      .findOne({ email: createSellerInput.email })
-      .exec();
-    if (user) {
-      throw new BadRequestException('This Email already exists');
-    }
+    // const user = await this.userModel
+    //   .findOne({ email: createSellerInput.email })
+    //   .exec();
+    // if (user) {
+    //   throw new BadRequestException('This Email already exists');
+    // }
     const saltOrRounds = 10;
     const hash = await bcrypt.hash(createSellerInput.password, saltOrRounds);
     createSellerInput.password = hash;
-    const sellerUser = new this.userModel(createSellerInput);
-    sellerUser.save();
+    // const sellerUser = new this.userModel(createSellerInput);
+    // sellerUser.save();
     const finalUser = new this.sellerModel(createSellerInput);
     return finalUser.save();
   }
@@ -59,7 +59,7 @@ export class SellerService {
   }
 
   async update(
-    id: number,
+    id: string,
     updateSellerInput: UpdateSellerInput,
   ): Promise<Seller> {
     const existingUser = await this.sellerModel.findByIdAndUpdate(

@@ -1,6 +1,6 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
-import { Role } from 'src/roles/enums/role.enum';
-import { TypeVendeur, TypeCompte } from 'src/enums';
+import { Role } from '../../roles/enums/role.enum';
+import { TypeVendeur, TypeCompte } from '../../enums';
 import { Schema as MongooseSchema } from 'mongoose';
 
 @InputType()
