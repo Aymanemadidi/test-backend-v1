@@ -1,6 +1,7 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Schema as MongooseSchema } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Role } from 'src/roles/enums/role.enum';
 @Schema()
 @ObjectType()
 export class User {
@@ -17,7 +18,7 @@ export class User {
   email: string;
   @Prop()
   @Field(() => String, { description: 'User role' })
-  role: string;
+  role: Role;
   @Prop()
   // @Field(() => String, { description: 'User hashed password' })
   password: string;

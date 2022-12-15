@@ -10,6 +10,8 @@ import { JwtAuthGuard } from '../common/auth/jwt-auth.guard';
 import { OnlySameUserByIdAllowed } from 'src/common/user.interceptor';
 import { Roles } from '../roles/roles.decorator';
 import { Role } from 'src/roles/enums/role.enum';
+// import { LoginBuyerInput } from 'src/buyer/dto/login-buyer.input';
+// import { LoggedBuyerOutput } from 'src/buyer/dto/loged-buyer.output';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -17,6 +19,15 @@ export class UsersResolver {
 
   @Mutation(() => User)
   createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
+    return this.usersService.create(createUserInput);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.SUPADMIN)
+  @Mutation(() => User)
+  createAdminBySupAdm(
+    @Args('createUserInput') createUserInput: CreateUserInput,
+  ) {
     return this.usersService.create(createUserInput);
   }
 
@@ -33,7 +44,7 @@ export class UsersResolver {
   }
 
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(OnlySameUserByIdAllowed)
+  // @UseInterceptors(OnlySameUserByIdAllowed)
   @Mutation(() => User)
   updateUser(
     @Args('updateUserInput')

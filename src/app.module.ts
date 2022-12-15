@@ -6,9 +6,17 @@ import { CommonModule } from './common/common.module';
 import { PassportModule } from '@nestjs/passport';
 import { RolesGuard } from './roles/roles.guard';
 import { JwtService } from '@nestjs/jwt';
+import { BuyerModule } from './buyer/buyer.module';
+import { SellerModule } from './seller/seller.module';
 
 @Module({
-  imports: [CommonModule, UsersModule, PassportModule],
+  imports: [
+    CommonModule,
+    UsersModule,
+    PassportModule,
+    BuyerModule,
+    SellerModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,

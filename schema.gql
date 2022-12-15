@@ -23,16 +23,163 @@ type LoggedUserOutput {
   access_token: String!
 }
 
+type Buyer {
+  _id: String!
+
+  """Buyer firstName """
+  firstName: String!
+
+  """Buyer lastName """
+  lastName: String!
+
+  """Buyer date of birth """
+  dateOfBirth: String!
+
+  """Buyer nationality """
+  nationality: String
+
+  """Buyer country of residence  """
+  countryOfResidency: String!
+
+  """Buyer mobile number """
+  mobileNumber: Float!
+
+  """Buyer fix number """
+  fixNumber: Float!
+
+  """Buyer website """
+  website: String
+
+  """Buyer email """
+  email: String!
+
+  """Buyer role"""
+  role: String!
+
+  """Buyer nomEntreprise """
+  nomEntreprise: String!
+
+  """Buyer Siret number """
+  numeroSiret: Int!
+
+  """Buyer typeCompte """
+  typeCompte: String
+
+  """Buyer civilite """
+  civilite: String
+}
+
+type LoggedBuyerOutput {
+  """Generated access_token of the buyer"""
+  access_token: String!
+}
+
+type Seller {
+  _id: String!
+
+  """Seller firstName """
+  firstName: String!
+
+  """Seller lastName """
+  lastName: String!
+
+  """Seller email """
+  email: String!
+
+  """Seller date of birth """
+  dateOfBirth: String!
+
+  """Seller nationality """
+  nationality: String
+
+  """Seller country of residence  """
+  countryOfResidency: String!
+
+  """Seller mobile number """
+  mobileNumber: String!
+
+  """Seller fix number """
+  fixNumber: String!
+
+  """Seller role"""
+  role: String!
+
+  """Seller Siret number """
+  numeroSiret: Float!
+
+  """Seller nomEntreprise """
+  nomEntreprise: String!
+
+  """Seller type """
+  typeVendeur: String
+
+  """Seller groupe """
+  groupe: String
+
+  """Seller typeCompte """
+  typeCompte: String
+
+  """Seller statutLegal """
+  statutLegal: String
+
+  """Seller codeNAF """
+  codeNAF: String
+
+  """Seller adresse """
+  adresse: String!
+
+  """Seller codePostal """
+  codePostal: String!
+
+  """Seller ville """
+  ville: String!
+
+  """Seller departement """
+  departement: String!
+
+  """Seller pays """
+  pays: String!
+
+  """Seller IBAN """
+  IBAN: String
+
+  """Seller website """
+  website: String
+
+  """Seller logo """
+  logo: String
+}
+
+type LoggedSellerOutput {
+  """Generated access_token of the sellerr"""
+  access_token: String!
+}
+
 type Query {
   users: [User!]!
   user(_id: String!): User!
+  buyers: [Buyer!]!
+  buyer(id: String!): Buyer!
+  sellers: [Seller!]!
+  seller(id: String!): Seller!
 }
 
 type Mutation {
   createUser(createUserInput: CreateUserInput!): User!
+  createAdminBySupAdm(createUserInput: CreateUserInput!): User!
   updateUser(updateUserInput: UpdateUserInput!): User!
   removeUser(_id: String!): User!
   loginUser(loginUserInput: LoginUserInput!): LoggedUserOutput!
+  createBuyer(createBuyerInput: CreateBuyerInput!): Buyer!
+  createBuyerByAdm(createBuyerInput: CreateBuyerInput!): Buyer!
+  updateBuyer(updateBuyerInput: UpdateBuyerInput!): Buyer!
+  removeBuyer(id: Int!): Buyer!
+  loginBuyer(loginBuyerInput: LoginBuyerInput!): LoggedBuyerOutput!
+  createSeller(createSellerInput: CreateSellerInput!): Seller!
+  createSellerByAdm(createSellerInput: CreateSellerInput!): Seller!
+  updateSeller(updateSellerInput: UpdateSellerInput!): Seller!
+  removeSeller(id: Int!): Seller!
+  loginSeller(loginSellerInput: LoginSellerInput!): LoggedSellerOutput!
 }
 
 input CreateUserInput {
@@ -71,6 +218,284 @@ input UpdateUserInput {
 }
 
 input LoginUserInput {
+  """email of the user"""
+  email: String!
+
+  """password of the user"""
+  password: String!
+}
+
+input CreateBuyerInput {
+  """Buyer firstName """
+  firstName: String!
+
+  """Buyer lastName """
+  lastName: String!
+
+  """Buyer email """
+  email: String!
+
+  """Buyer date of birth """
+  dateOfBirth: String!
+
+  """Buyer nationality """
+  nationality: String
+
+  """Buyer country of residence  """
+  countryOfResidency: String!
+
+  """Buyer mobile number """
+  mobileNumber: Float!
+
+  """Buyer fix number """
+  fixNumber: Float!
+
+  """Buyer role"""
+  role: String!
+
+  """Buyer Siret number """
+  numeroSiret: Int!
+
+  """Buyer nomEntreprise """
+  nomEntreprise: String!
+
+  """Buyer typeCompte """
+  typeCompte: String
+
+  """Buyer codePostal """
+  codePostal: String!
+
+  """Buyer ville """
+  ville: String!
+
+  """Buyer pays """
+  pays: String!
+
+  """Buyer website """
+  website: String
+
+  """User hashed password"""
+  password: String!
+}
+
+input UpdateBuyerInput {
+  """Buyer firstName """
+  firstName: String
+
+  """Buyer lastName """
+  lastName: String
+
+  """Buyer email """
+  email: String
+
+  """Buyer date of birth """
+  dateOfBirth: String
+
+  """Buyer nationality """
+  nationality: String
+
+  """Buyer country of residence  """
+  countryOfResidency: String
+
+  """Buyer mobile number """
+  mobileNumber: Float
+
+  """Buyer fix number """
+  fixNumber: Float
+
+  """Buyer role"""
+  role: String
+
+  """Buyer Siret number """
+  numeroSiret: Int
+
+  """Buyer nomEntreprise """
+  nomEntreprise: String
+
+  """Buyer typeCompte """
+  typeCompte: String
+
+  """Buyer codePostal """
+  codePostal: String
+
+  """Buyer ville """
+  ville: String
+
+  """Buyer pays """
+  pays: String
+
+  """Buyer website """
+  website: String
+
+  """User hashed password"""
+  password: String
+  _id: Int!
+}
+
+input LoginBuyerInput {
+  """email of the user"""
+  email: String!
+
+  """password of the user"""
+  password: String!
+}
+
+input CreateSellerInput {
+  """Seller firstName """
+  firstName: String!
+
+  """Seller lastName """
+  lastName: String!
+
+  """Seller email """
+  email: String!
+
+  """Seller date of birth """
+  dateOfBirth: String!
+
+  """Seller nationality """
+  nationality: String
+
+  """Seller country of residence  """
+  countryOfResidency: String!
+
+  """Seller mobile number """
+  mobileNumber: Float!
+
+  """Seller fix number """
+  fixNumber: Float!
+
+  """Seller role"""
+  role: String!
+
+  """Seller Siret number """
+  numeroSiret: Int!
+
+  """Seller nomEntreprise """
+  nomEntreprise: String!
+
+  """Seller type """
+  typeVendeur: String
+
+  """Seller groupe """
+  groupe: String
+
+  """Seller typeCompte """
+  typeCompte: String
+
+  """Seller statutLegal """
+  statutLegal: String
+
+  """Seller codeNAF """
+  codeNAF: String
+
+  """Seller adresse """
+  adresse: String!
+
+  """Seller codePostal """
+  codePostal: String!
+
+  """Seller ville """
+  ville: String!
+
+  """Seller departement """
+  departement: String!
+
+  """Seller pays """
+  pays: String!
+
+  """Seller IBAN """
+  IBAN: String
+
+  """Seller website """
+  website: String
+
+  """Seller logo """
+  logo: String
+
+  """User hashed password"""
+  password: String!
+}
+
+input UpdateSellerInput {
+  """Seller firstName """
+  firstName: String
+
+  """Seller lastName """
+  lastName: String
+
+  """Seller email """
+  email: String
+
+  """Seller date of birth """
+  dateOfBirth: String
+
+  """Seller nationality """
+  nationality: String
+
+  """Seller country of residence  """
+  countryOfResidency: String
+
+  """Seller mobile number """
+  mobileNumber: Float
+
+  """Seller fix number """
+  fixNumber: Float
+
+  """Seller role"""
+  role: String
+
+  """Seller Siret number """
+  numeroSiret: Int
+
+  """Seller nomEntreprise """
+  nomEntreprise: String
+
+  """Seller type """
+  typeVendeur: String
+
+  """Seller groupe """
+  groupe: String
+
+  """Seller typeCompte """
+  typeCompte: String
+
+  """Seller statutLegal """
+  statutLegal: String
+
+  """Seller codeNAF """
+  codeNAF: String
+
+  """Seller adresse """
+  adresse: String
+
+  """Seller codePostal """
+  codePostal: String
+
+  """Seller ville """
+  ville: String
+
+  """Seller departement """
+  departement: String
+
+  """Seller pays """
+  pays: String
+
+  """Seller IBAN """
+  IBAN: String
+
+  """Seller website """
+  website: String
+
+  """Seller logo """
+  logo: String
+
+  """User hashed password"""
+  password: String
+  _id: Int!
+}
+
+input LoginSellerInput {
   """email of the user"""
   email: String!
 

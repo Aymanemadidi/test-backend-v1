@@ -11,7 +11,7 @@ export class AuthService {
     private jwtTokenService: JwtService,
   ) {}
   async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.usersService.findByEmail(email);
+    const user = await this.usersService.findByEmail(email); //404 not found
     if (user) {
       if (await bcrypt.compare(password, user.password)) {
         delete user.password;

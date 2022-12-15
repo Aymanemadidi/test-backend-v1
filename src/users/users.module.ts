@@ -17,6 +17,14 @@ import { AuthService } from 'src/common/auth/services/auth.service';
     ]),
   ],
   providers: [UsersResolver, UsersService],
-  exports: [UsersService],
+  exports: [
+    UsersService,
+    MongooseModule.forFeature([
+      {
+        name: User.name,
+        schema: UserSchema,
+      },
+    ]),
+  ],
 })
 export class UsersModule {}
