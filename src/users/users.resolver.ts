@@ -71,7 +71,7 @@ export class UsersResolver {
     return this.usersService.loginUser(loginUserInput);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Mutation(() => Boolean)
   logoutUser(@Args('_id') id: string) {
     return this.usersService.logout(id);

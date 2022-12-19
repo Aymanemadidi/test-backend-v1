@@ -12,10 +12,10 @@ import { User } from './entities/user.entity';
 import { AuthService } from '../common/auth/services/auth.service';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { CreateSellerInput } from 'src/seller/dto/create-seller.input';
-import { UpdateSellerInput } from 'src/seller/dto/update-seller.input';
+import { CreateSellerInput } from '../seller/dto/create-seller.input';
+import { UpdateSellerInput } from '../seller/dto/update-seller.input';
 import * as argon from 'argon2';
-import { Tokens } from 'src/common/auth/types';
+import { Tokens } from '../common/auth/types';
 
 @Injectable()
 export class UsersService {

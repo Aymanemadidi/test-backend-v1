@@ -12,6 +12,10 @@ import { AuthService } from '../common/auth/services/auth.service';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
+import * as argon from 'argon2';
+import { Tokens } from '../common/auth/types';
+import { LoggedBuyerOutput } from './dto/loged-buyer.output';
 
 @Injectable()
 export class BuyerService {
@@ -21,8 +25,9 @@ export class BuyerService {
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
     private readonly authService: AuthService,
+    private readonly usersService: UsersService,
   ) {}
-  async create(createBuyerInput: CreateBuyerInput) {
+  async create(createBuyerInput: CreateBuyerInput): Promise<LoggedBuyerOutput> {
     const user = await this.userModel
       .findOne({ email: createBuyerInput.email })
       .exec();
@@ -46,7 +51,10 @@ export class BuyerService {
     createBuyerInput.statut = StatutBuyer.NEW;
     createBuyerInput.userId = buyerUser._id;
     const finalUser = new this.buyerModel(createBuyerInput);
-    return finalUser.save();
+    finalUser.save();
+    const tokens = await this.authService.generateUserCredentials(buyerUser);
+    await this.usersService.updateRtHash(buyerUser.id, tokens.refresh_token);
+    return tokens;
   }
 
   findAll() {
@@ -102,7 +110,9 @@ export class BuyerService {
       buyer.time_connected = Date.now() - buyer.last_connected;
       buyer.last_connected = Date.now();
       buyer.save();
-      return this.authService.generateUserCredentials(user);
+      const tokens = await this.authService.generateUserCredentials(user);
+      await this.usersService.updateRtHash(user.id, tokens.refresh_token);
+      return tokens;
     }
   }
 }

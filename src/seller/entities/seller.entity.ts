@@ -17,6 +17,8 @@ export class Seller {
   @Field(() => String)
   _id: MongooseSchema.Types.ObjectId;
   @Prop()
+  userId: MongooseSchema.Types.ObjectId;
+  @Prop()
   @Field(() => String, { description: 'Seller firstName ' })
   firstName: string;
   @Prop()

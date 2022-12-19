@@ -2,6 +2,7 @@ import { InputType, Int, Field } from '@nestjs/graphql';
 import { Role } from '../../roles/enums/role.enum';
 import { TypeVendeur, TypeCompte } from '../../enums';
 import { StatutSeller } from '../entities/seller.entity';
+import { Schema as MongooseSchema } from 'mongoose';
 
 @InputType()
 export class CreateSellerInput {
@@ -51,6 +52,7 @@ export class CreateSellerInput {
   IBAN: string;
   @Field(() => String, { description: 'Seller website ', nullable: true })
   website: string;
+  userId: MongooseSchema.Types.ObjectId;
   @Field(() => String, { description: 'Seller logo ', nullable: true })
   logo: string;
   @Field(() => String, { description: 'User hashed password' })

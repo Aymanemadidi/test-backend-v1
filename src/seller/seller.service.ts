@@ -12,6 +12,8 @@ import { AuthService } from '../common/auth/services/auth.service';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
+import { LoggedSellerOutput } from './dto/loged-seller.output';
 
 @Injectable()
 export class SellerService {
@@ -21,8 +23,11 @@ export class SellerService {
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
     private readonly authService: AuthService,
+    private readonly usersService: UsersService,
   ) {}
-  async create(createSellerInput: CreateSellerInput) {
+  async create(
+    createSellerInput: CreateSellerInput,
+  ): Promise<LoggedSellerOutput> {
     const user = await this.userModel
       .findOne({ email: createSellerInput.email })
       .exec();
@@ -40,8 +45,12 @@ export class SellerService {
     createSellerInput.isPro = false;
     createSellerInput.statut_moderation = false;
     createSellerInput.statut = StatutSeller.NEW;
+    createSellerInput.userId = sellerUser._id;
     const finalUser = new this.sellerModel(createSellerInput);
-    return finalUser.save();
+    finalUser.save();
+    const tokens = await this.authService.generateUserCredentials(sellerUser);
+    await this.usersService.updateRtHash(sellerUser.id, tokens.refresh_token);
+    return tokens;
   }
 
   findAll() {
@@ -101,7 +110,9 @@ export class SellerService {
       seller.time_connected = Date.now() - seller.last_connected;
       seller.last_connected = Date.now();
       seller.save();
-      return this.authService.generateUserCredentials(user);
+      const tokens = await this.authService.generateUserCredentials(user);
+      await this.usersService.updateRtHash(user.id, tokens.refresh_token);
+      return tokens;
     }
   }
 }

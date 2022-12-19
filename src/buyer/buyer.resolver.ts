@@ -9,12 +9,16 @@ import { UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/common/auth/jwt-auth.guard';
 import { Roles } from '../roles/roles.decorator';
 import { Role } from '../roles/enums/role.enum';
+import { UsersService } from 'src/users/users.service';
 
 @Resolver(() => Buyer)
 export class BuyerResolver {
-  constructor(private readonly buyerService: BuyerService) {}
+  constructor(
+    private readonly buyerService: BuyerService,
+    private readonly usersService: UsersService,
+  ) {}
 
-  @Mutation(() => Buyer)
+  @Mutation(() => LoggedBuyerOutput)
   createBuyer(@Args('createBuyerInput') createBuyerInput: CreateBuyerInput) {
     return this.buyerService.create(createBuyerInput);
   }
@@ -54,4 +58,10 @@ export class BuyerResolver {
   loginBuyer(@Args('loginBuyerInput') LoginBuyerInput: LoginBuyerInput) {
     return this.buyerService.loginBuyer(LoginBuyerInput);
   }
+
+  // @UseGuards(JwtAuthGuard)
+  // @Mutation(() => Boolean)
+  // logoutBuyer(@Args('_id') id: string) {
+  //   return this.usersService.logout(id);
+  // }
 }

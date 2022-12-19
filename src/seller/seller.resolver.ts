@@ -14,7 +14,7 @@ import { Role } from '../roles/enums/role.enum';
 export class SellerResolver {
   constructor(private readonly sellerService: SellerService) {}
 
-  @Mutation(() => Seller)
+  @Mutation(() => LoggedSellerOutput)
   createSeller(
     @Args('createSellerInput') createSellerInput: CreateSellerInput,
   ) {

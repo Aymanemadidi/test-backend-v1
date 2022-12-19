@@ -78,6 +78,9 @@ type Buyer {
 type LoggedBuyerOutput {
   """Generated access_token of the buyer"""
   access_token: String!
+
+  """Generated refresh_token of the buyer"""
+  refresh_token: String!
 }
 
 type Seller {
@@ -162,6 +165,9 @@ type Seller {
 type LoggedSellerOutput {
   """Generated access_token of the sellerr"""
   access_token: String!
+
+  """Generated refresh_token of the seller"""
+  refresh_token: String!
 }
 
 type Query {
@@ -181,12 +187,12 @@ type Mutation {
   removeUser(_id: String!): User!
   loginUser(loginUserInput: LoginUserInput!): LoggedUserOutput!
   logoutUser(_id: String!): Boolean!
-  createBuyer(createBuyerInput: CreateBuyerInput!): Buyer!
+  createBuyer(createBuyerInput: CreateBuyerInput!): LoggedBuyerOutput!
   createBuyerByAdm(createBuyerInput: CreateBuyerInput!): Buyer!
   updateBuyer(updateBuyerInput: UpdateBuyerInput!): Buyer!
   removeBuyer(id: Int!): Buyer!
   loginBuyer(loginBuyerInput: LoginBuyerInput!): LoggedBuyerOutput!
-  createSeller(createSellerInput: CreateSellerInput!): Seller!
+  createSeller(createSellerInput: CreateSellerInput!): LoggedSellerOutput!
   createSellerByAdm(createSellerInput: CreateSellerInput!): Seller!
   updateSeller(updateSellerInput: UpdateSellerInput!): Seller!
   removeSeller(id: Int!): Seller!
