@@ -13,8 +13,6 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
-import * as argon from 'argon2';
-import { Tokens } from '../common/auth/types';
 import { LoggedBuyerOutput } from './dto/loged-buyer.output';
 
 @Injectable()

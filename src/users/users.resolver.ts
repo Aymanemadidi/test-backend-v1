@@ -32,8 +32,8 @@ export class UsersResolver {
     return this.usersService.create(createUserInput);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Roles(Role.ADMIN)
+  // @UseGuards(JwtAuthGuard)
+  // @Roles(Role.ADMIN)
   @Mutation(() => Boolean)
   archiveUser(@Args('_id') id: string) {
     return this.usersService.archive(id);
