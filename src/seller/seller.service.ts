@@ -7,7 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateSellerInput } from './dto/create-seller.input';
 import { UpdateSellerInput } from './dto/update-seller.input';
 import { LoginSellerInput } from './dto/login-seller.input';
-import { Seller } from './entities/seller.entity';
+import { Seller, StatutSeller } from './entities/seller.entity';
 import { AuthService } from '../common/auth/services/auth.service';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -18,22 +18,28 @@ export class SellerService {
   constructor(
     @InjectModel(Seller.name)
     private readonly sellerModel: Model<Seller>,
-    // @InjectModel(User.name)
-    // private readonly userModel: Model<User>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<User>,
     private readonly authService: AuthService,
   ) {}
   async create(createSellerInput: CreateSellerInput) {
-    // const user = await this.userModel
-    //   .findOne({ email: createSellerInput.email })
-    //   .exec();
-    // if (user) {
-    //   throw new BadRequestException('This Email already exists');
-    // }
+    const user = await this.userModel
+      .findOne({ email: createSellerInput.email })
+      .exec();
+    if (user) {
+      throw new BadRequestException('This Email already exists');
+    }
     const saltOrRounds = 10;
     const hash = await bcrypt.hash(createSellerInput.password, saltOrRounds);
     createSellerInput.password = hash;
-    // const sellerUser = new this.userModel(createSellerInput);
-    // sellerUser.save();
+    const sellerUser = new this.userModel(createSellerInput);
+    sellerUser.save();
+    createSellerInput.created_at = Date.now();
+    createSellerInput.last_connected = Date.now();
+    createSellerInput.isConnected = true;
+    createSellerInput.isPro = false;
+    createSellerInput.statut_moderation = false;
+    createSellerInput.statut = StatutSeller.NEW;
     const finalUser = new this.sellerModel(createSellerInput);
     return finalUser.save();
   }
@@ -87,6 +93,14 @@ export class SellerService {
     if (!user) {
       throw new BadRequestException(`Email or password are invalid`);
     } else {
+      // const current time
+      const seller = await this.sellerModel.findOne({
+        email: loginSellerInput.email,
+      });
+      // const { last_connected, time_connected } = seller;
+      seller.time_connected = Date.now() - seller.last_connected;
+      seller.last_connected = Date.now();
+      seller.save();
       return this.authService.generateUserCredentials(user);
     }
   }

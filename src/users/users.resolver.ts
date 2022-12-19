@@ -10,6 +10,7 @@ import { JwtAuthGuard } from '../common/auth/jwt-auth.guard';
 import { OnlySameUserByIdAllowed } from '../common/user.interceptor';
 import { Roles } from '../roles/roles.decorator';
 import { Role } from '../roles/enums/role.enum';
+import { AtGuard } from '../common/auth/at.guard';
 // import { LoginBuyerInput } from 'src/buyer/dto/login-buyer.input';
 // import { LoggedBuyerOutput } from 'src/buyer/dto/loged-buyer.output';
 
@@ -17,7 +18,7 @@ import { Role } from '../roles/enums/role.enum';
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
-  @Mutation(() => User)
+  @Mutation(() => LoggedUserOutput)
   createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
     return this.usersService.create(createUserInput);
   }
@@ -33,6 +34,13 @@ export class UsersResolver {
 
   @UseGuards(JwtAuthGuard)
   @Roles(Role.ADMIN)
+  @Mutation(() => Boolean)
+  archiveUser(@Args('_id') id: string) {
+    return this.usersService.archive(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  // @Roles(Role.ADMIN)
   @Query(() => [User], { name: 'users' })
   findAll() {
     return this.usersService.findAll();
@@ -61,5 +69,11 @@ export class UsersResolver {
   @Mutation(() => LoggedUserOutput)
   loginUser(@Args('loginUserInput') loginUserInput: LoginUserInput) {
     return this.usersService.loginUser(loginUserInput);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Mutation(() => Boolean)
+  logoutUser(@Args('_id') id: string) {
+    return this.usersService.logout(id);
   }
 }

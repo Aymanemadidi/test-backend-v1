@@ -7,7 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateBuyerInput } from './dto/create-buyer.input';
 import { UpdateBuyerInput } from './dto/update-buyer.input';
 import { LoginBuyerInput } from './dto/login-buyer.input';
-import { Buyer } from './entities/buyer.entity';
+import { Buyer, StatutBuyer } from './entities/buyer.entity';
 import { AuthService } from '../common/auth/services/auth.service';
 import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
@@ -40,6 +40,10 @@ export class BuyerService {
     createBuyerInput.password = hash;
     const buyerUser = new this.userModel(createBuyerInput);
     buyerUser.save();
+    createBuyerInput.created_at = Date.now();
+    createBuyerInput.last_connected = Date.now();
+    createBuyerInput.isConnected = true;
+    createBuyerInput.statut = StatutBuyer.NEW;
     createBuyerInput.userId = buyerUser._id;
     const finalUser = new this.buyerModel(createBuyerInput);
     return finalUser.save();
@@ -91,6 +95,13 @@ export class BuyerService {
     if (!user) {
       throw new BadRequestException(`Email or password are invalid`);
     } else {
+      const buyer = await this.buyerModel.findOne({
+        email: loginBuyerInput.email,
+      });
+      // const { last_connected, time_connected } = seller;
+      buyer.time_connected = Date.now() - buyer.last_connected;
+      buyer.last_connected = Date.now();
+      buyer.save();
       return this.authService.generateUserCredentials(user);
     }
   }

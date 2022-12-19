@@ -21,6 +21,9 @@ type User {
 type LoggedUserOutput {
   """Generated access_token of the user"""
   access_token: String!
+
+  """Generated refresh_token of the user"""
+  refresh_token: String!
 }
 
 type Buyer {
@@ -67,6 +70,9 @@ type Buyer {
 
   """Buyer civilite """
   civilite: String
+
+  """Buyer Pseudo """
+  pseudo: String
 }
 
 type LoggedBuyerOutput {
@@ -148,6 +154,9 @@ type Seller {
 
   """Seller logo """
   logo: String
+
+  """Seller Pseudo """
+  pseudo: String
 }
 
 type LoggedSellerOutput {
@@ -165,11 +174,13 @@ type Query {
 }
 
 type Mutation {
-  createUser(createUserInput: CreateUserInput!): User!
+  createUser(createUserInput: CreateUserInput!): LoggedUserOutput!
   createAdminBySupAdm(createUserInput: CreateUserInput!): User!
+  archiveUser(_id: String!): Boolean!
   updateUser(updateUserInput: UpdateUserInput!): User!
   removeUser(_id: String!): User!
   loginUser(loginUserInput: LoginUserInput!): LoggedUserOutput!
+  logoutUser(_id: String!): Boolean!
   createBuyer(createBuyerInput: CreateBuyerInput!): Buyer!
   createBuyerByAdm(createBuyerInput: CreateBuyerInput!): Buyer!
   updateBuyer(updateBuyerInput: UpdateBuyerInput!): Buyer!
@@ -276,6 +287,7 @@ input CreateBuyerInput {
 
   """User hashed password"""
   password: String!
+  pseudo: String!
 }
 
 input UpdateBuyerInput {
@@ -329,6 +341,7 @@ input UpdateBuyerInput {
 
   """User hashed password"""
   password: String
+  pseudo: String
   _id: Int!
 }
 
@@ -415,6 +428,7 @@ input CreateSellerInput {
 
   """User hashed password"""
   password: String!
+  pseudo: String!
 }
 
 input UpdateSellerInput {
@@ -492,6 +506,7 @@ input UpdateSellerInput {
 
   """User hashed password"""
   password: String
+  pseudo: String
   _id: String!
 }
 

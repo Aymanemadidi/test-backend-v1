@@ -1,6 +1,7 @@
 import { InputType, Int, Field } from '@nestjs/graphql';
 import { Role } from '../../roles/enums/role.enum';
 import { TypeVendeur, TypeCompte } from '../../enums';
+import { StatutSeller } from '../entities/seller.entity';
 
 @InputType()
 export class CreateSellerInput {
@@ -54,4 +55,20 @@ export class CreateSellerInput {
   logo: string;
   @Field(() => String, { description: 'User hashed password' })
   password: string;
+  // @Field(() => Number)
+  created_at: number;
+  // @Field(() => Number)
+  last_connected: number;
+  // @Field(() => Number)
+  // time_connected: number;
+  // @Field(() => Boolean)
+  isConnected: boolean;
+  @Field(() => String)
+  pseudo: string;
+  // @Field(() => Boolean)
+  isPro: boolean;
+  // @Field(() => Boolean)
+  statut_moderation: boolean;
+  // @Field(() => String)
+  statut: StatutSeller;
 }

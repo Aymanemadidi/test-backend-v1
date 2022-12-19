@@ -26,7 +26,7 @@ export class RolesGuard implements CanActivate {
 
     const ctx = GqlExecutionContext.create(context);
     const { req } = ctx.getContext();
-    console.log(req.headers.authorization);
+    // console.log(req.headers.authorization);
     const user = this.jwtService.decode(req.headers?.authorization?.slice(7));
     if (!user) {
       throw new ForbiddenException();

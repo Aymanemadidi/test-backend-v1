@@ -22,6 +22,10 @@ export class User {
   @Prop()
   // @Field(() => String, { description: 'User hashed password' })
   password: string;
+  @Prop()
+  hashed_rt: string | null;
+  @Prop()
+  isArchived: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

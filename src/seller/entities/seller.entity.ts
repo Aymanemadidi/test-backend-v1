@@ -3,6 +3,14 @@ import { Schema as MongooseSchema } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Role } from '../../roles/enums/role.enum';
 import { TypeVendeur, TypeCompte } from '../../enums';
+
+export enum StatutSeller {
+  ACTIF = 'actif',
+  ATTENTE = 'attente',
+  INACTIF = 'inactif',
+  NEW = 'new',
+}
+
 @Schema()
 @ObjectType()
 export class Seller {
@@ -83,6 +91,23 @@ export class Seller {
   @Prop()
   // @Field(() => String, { description: 'User hashed password' })
   password: string;
+  @Prop()
+  created_at: number;
+  @Prop()
+  last_connected: number;
+  @Prop()
+  time_connected: number;
+  @Prop()
+  isConnected: boolean;
+  @Prop()
+  @Field(() => String, { description: 'Seller Pseudo ', nullable: true })
+  pseudo: string;
+  @Prop()
+  isPro: boolean;
+  @Prop()
+  statut_moderation: boolean;
+  @Prop()
+  statut: StatutSeller;
 }
 
 export const SellerSchema = SchemaFactory.createForClass(Seller);

@@ -2,6 +2,7 @@ import { InputType, Int, Field } from '@nestjs/graphql';
 import { Role } from '../../roles/enums/role.enum';
 import { TypeVendeur, TypeCompte } from '../../enums';
 import { Schema as MongooseSchema } from 'mongoose';
+import { StatutBuyer } from '../entities/buyer.entity';
 
 @InputType()
 export class CreateBuyerInput {
@@ -40,4 +41,15 @@ export class CreateBuyerInput {
   userId: MongooseSchema.Types.ObjectId;
   @Field(() => String, { description: 'User hashed password' })
   password: string;
+  created_at: number;
+  // @Field(() => Number)
+  last_connected: number;
+  // @Field(() => Number)
+  // time_connected: number;
+  // @Field(() => Boolean)
+  isConnected: boolean;
+  @Field(() => String)
+  pseudo: string;
+  // @Field(() => String)
+  statut: StatutBuyer;
 }
