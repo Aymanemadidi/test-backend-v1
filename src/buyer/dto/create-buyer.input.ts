@@ -41,9 +41,9 @@ export class CreateBuyerInput {
   userId: MongooseSchema.Types.ObjectId;
   @Field(() => String, { description: 'User hashed password' })
   password: string;
-  created_at: number;
+  created_at: Date;
   // @Field(() => Number)
-  last_connected: number;
+  last_connected: Date;
   // @Field(() => Number)
   // time_connected: number;
   // @Field(() => Boolean)

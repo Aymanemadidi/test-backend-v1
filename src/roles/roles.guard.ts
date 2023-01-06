@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from './enums/role.enum';
-import { ROLE_KEY } from './roles.decorator';
+import { ROLES_KEY } from './roles.decorator';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { JwtService } from '@nestjs/jwt';
 
@@ -15,7 +15,7 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector, private jwtService: JwtService) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLE_KEY, [
+    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
@@ -27,7 +27,7 @@ export class RolesGuard implements CanActivate {
     const ctx = GqlExecutionContext.create(context);
     const { req } = ctx.getContext();
     // console.log(req.headers.authorization);
-    const user = this.jwtService.decode(req.headers?.authorization?.slice(7));
+    const user = this.jwtService.decode(req?.cookies?.access_token);
     if (!user) {
       throw new ForbiddenException();
     }

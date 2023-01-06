@@ -14,6 +14,8 @@ import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
 import { LoggedBuyerOutput } from './dto/loged-buyer.output';
+import { serialize } from 'cookie';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class BuyerService {
@@ -24,6 +26,7 @@ export class BuyerService {
     private readonly userModel: Model<User>,
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
   ) {}
   async create(createBuyerInput: CreateBuyerInput): Promise<LoggedBuyerOutput> {
     const user = await this.userModel
@@ -43,8 +46,10 @@ export class BuyerService {
     createBuyerInput.password = hash;
     const buyerUser = new this.userModel(createBuyerInput);
     buyerUser.save();
-    createBuyerInput.created_at = Date.now();
-    createBuyerInput.last_connected = Date.now();
+    const d = new Date();
+    const currentDate = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    createBuyerInput.created_at = new Date(currentDate);
+    createBuyerInput.last_connected = new Date(currentDate);
     createBuyerInput.isConnected = true;
     createBuyerInput.statut = StatutBuyer.NEW;
     createBuyerInput.userId = buyerUser._id;
@@ -68,32 +73,44 @@ export class BuyerService {
   }
 
   async findOne(id: string): Promise<Buyer> {
-    const user = await this.buyerModel.findOne({ _id: id }).exec();
+    const user = await this.buyerModel.findOne({ userId: id }).exec();
     if (!user) {
       throw new NotFoundException(`Buyer ${id} not found!`);
     }
     return user;
   }
 
-  async update(id: number, updateBuyerInput: UpdateBuyerInput): Promise<Buyer> {
-    const existingUser = await this.buyerModel.findByIdAndUpdate(
-      { _id: id },
+  async update(id: string, updateBuyerInput: UpdateBuyerInput): Promise<Buyer> {
+    const updatedBuyer = await this.buyerModel.findOneAndUpdate(
+      { userId: id },
       { $set: updateBuyerInput },
       { new: true },
     );
 
-    if (!existingUser) {
+    if (!updatedBuyer) {
       throw new NotFoundException(`Buyer ${id} not found!`);
     }
-    return existingUser;
+
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      { _id: id },
+      { $set: updateBuyerInput },
+      { new: true },
+    );
+    return updatedBuyer;
   }
 
   async remove(id: string) {
-    const user = await this.buyerModel.findOne({ _id: id }).exec();
-    return user.remove();
+    const user = await this.buyerModel.findOne({ userId: id }).exec();
+    if (!user) {
+      throw new NotFoundException();
+    }
+    const buyerUserId = user.userId;
+    this.usersService.remove(buyerUserId.toString());
+    user.remove();
+    return true;
   }
 
-  async loginBuyer(loginBuyerInput: LoginBuyerInput) {
+  async loginBuyer(loginBuyerInput: LoginBuyerInput, ctx: any) {
     const user = await this.authService.validateUser(
       loginBuyerInput.email,
       loginBuyerInput.password,
@@ -104,13 +121,54 @@ export class BuyerService {
       const buyer = await this.buyerModel.findOne({
         email: loginBuyerInput.email,
       });
-      // const { last_connected, time_connected } = seller;
-      buyer.time_connected = Date.now() - buyer.last_connected;
-      buyer.last_connected = Date.now();
+      buyer.last_connected = new Date();
       buyer.save();
       const tokens = await this.authService.generateUserCredentials(user);
+      const serialisedA = serialize('access_token', tokens.access_token, {
+        httpOnly: false, //maybe disabling this to be able to send it in authorization header
+        secure: true,
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60,
+        path: '/',
+      });
+      const serialisedR = serialize('refresh_token', tokens.refresh_token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60,
+        path: '/',
+      });
+      ctx.res.setHeader('Set-Cookie', [serialisedA, serialisedR]);
+      ctx.res.setHeader('Access-Control-Allow-Credentials', 'true');
       await this.usersService.updateRtHash(user.id, tokens.refresh_token);
       return tokens;
     }
+  }
+
+  async logout(ctx: any) {
+    const at = ctx.req.cookies['access_token'];
+    if (!at) {
+      throw new NotFoundException();
+    }
+    const payload = this.jwtService.decode(at);
+    if (!payload) {
+      throw new NotFoundException();
+    }
+    const id = payload.sub;
+    const buyer = await this.buyerModel.findOne({
+      userId: id,
+    });
+    const lastConn = buyer.last_connected;
+    const today = new Date();
+    const diffMs = today.getTime() - buyer.last_connected.getTime();
+    const diffMins = Math.round(
+      (((Number(today) - Number(lastConn)) % 86400000) % 3600000) / 60000,
+    );
+    const totalMinutes = diffMins;
+    const diffHrs = Math.floor((diffMs % 86400000) / 3600000); // hours
+    const minutes = Math.trunc(totalMinutes % 60);
+    buyer.time_connected = `${diffHrs}h${minutes}min`;
+    buyer.save();
+    return this.usersService.logout(ctx);
   }
 }

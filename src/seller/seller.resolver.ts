@@ -1,20 +1,23 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
 import { SellerService } from './seller.service';
 import { Seller } from './entities/seller.entity';
 import { CreateSellerInput } from './dto/create-seller.input';
 import { UpdateSellerInput } from './dto/update-seller.input';
 import { LoggedSellerOutput } from './dto/loged-seller.output';
 import { LoginSellerInput } from './dto/login-seller.input';
-import { UseGuards } from '@nestjs/common';
+import { Res, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../common/auth/jwt-auth.guard';
+import { JwtRtAuthGuard } from 'src/common/auth/jwt-rt.guard';
+import { TestAuthGuard } from 'src/common/auth/test.guard';
 import { Roles } from '../roles/roles.decorator';
 import { Role } from '../roles/enums/role.enum';
+import { Response } from 'express';
 
 @Resolver(() => Seller)
 export class SellerResolver {
   constructor(private readonly sellerService: SellerService) {}
 
-  @Mutation(() => LoggedSellerOutput)
+  @Mutation(() => Seller)
   createSeller(
     @Args('createSellerInput') createSellerInput: CreateSellerInput,
   ) {
@@ -22,7 +25,7 @@ export class SellerResolver {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Roles(Role.ADMIN)
+  @Roles([Role.ADMIN, Role.SUPADMIN])
   @Mutation(() => Seller)
   createSellerByAdm(
     @Args('createSellerInput') createSellerInput: CreateSellerInput,
@@ -30,32 +33,61 @@ export class SellerResolver {
     return this.sellerService.create(createSellerInput);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Roles(Role.ADMIN)
+  @UseGuards(JwtRtAuthGuard)
+  @Roles([Role.ADMIN, Role.SUPADMIN])
   @Query(() => [Seller], { name: 'sellers' })
   findAll() {
     return this.sellerService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Roles([Role.ADMIN, Role.SUPADMIN])
+  @Query(() => [Seller], { name: 'sellersOcc' })
+  findAllWithOccurence(
+    @Args('email', { type: () => String }) email: string,
+    @Args('nomEntreprise', { type: () => String }) nomEntreprise: string,
+    @Args('pseudo', { type: () => String }) pseudo: string,
+    @Args('startDate', { type: () => String }) startDate: string,
+    @Args('endDate', { type: () => String }) endDate: string,
+  ) {
+    return this.sellerService.findAllWithOccurence(
+      email,
+      nomEntreprise,
+      pseudo,
+      startDate,
+      endDate,
+    );
+  }
+
   @Query(() => Seller, { name: 'seller' })
-  findOne(@Args('id', { type: () => String }) id: string) {
+  findOne(@Args('_id', { type: () => String }) id: string) {
     return this.sellerService.findOne(id);
   }
 
   @Mutation(() => Seller)
   updateSeller(
+    @Args('_id') id: string,
     @Args('updateSellerInput') updateSellerInput: UpdateSellerInput,
   ) {
-    return this.sellerService.update(updateSellerInput._id, updateSellerInput);
+    return this.sellerService.update(id, updateSellerInput);
   }
 
-  @Mutation(() => Seller)
-  removeSeller(@Args('id', { type: () => Int }) id: string) {
+  @Mutation(() => Boolean)
+  removeSeller(@Args('_id') id: string) {
     return this.sellerService.remove(id);
   }
 
+  // @UseGuards(JwtAuthGuard)
   @Mutation(() => LoggedSellerOutput)
-  loginSeller(@Args('loginSellerInput') loginSellerInput: LoginSellerInput) {
-    return this.sellerService.loginSeller(loginSellerInput);
+  loginSeller(
+    @Args('loginSellerInput') loginSellerInput: LoginSellerInput,
+    @Context() ctx: any,
+  ) {
+    return this.sellerService.loginSeller(loginSellerInput, ctx);
+  }
+
+  @Mutation(() => Boolean)
+  logoutSeller(@Context() ctx: any) {
+    return this.sellerService.logout(ctx);
   }
 }

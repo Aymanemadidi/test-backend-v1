@@ -1,4 +1,4 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Context } from '@nestjs/graphql';
 import { BuyerService } from './buyer.service';
 import { Buyer } from './entities/buyer.entity';
 import { CreateBuyerInput } from './dto/create-buyer.input';
@@ -10,6 +10,8 @@ import { JwtAuthGuard } from 'src/common/auth/jwt-auth.guard';
 import { Roles } from '../roles/roles.decorator';
 import { Role } from '../roles/enums/role.enum';
 import { UsersService } from 'src/users/users.service';
+import { Response } from 'express';
+import { Res } from '@nestjs/common';
 
 @Resolver(() => Buyer)
 export class BuyerResolver {
@@ -24,7 +26,7 @@ export class BuyerResolver {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Roles(Role.ADMIN)
+  @Roles([Role.ADMIN, Role.SUPADMIN])
   @Mutation(() => Buyer)
   createBuyerByAdm(
     @Args('createBuyerInput') createBuyerInput: CreateBuyerInput,
@@ -33,7 +35,7 @@ export class BuyerResolver {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Roles(Role.ADMIN)
+  @Roles([Role.ADMIN, Role.SUPADMIN])
   @Query(() => [Buyer], { name: 'buyers' })
   findAll() {
     return this.buyerService.findAll();
@@ -45,23 +47,30 @@ export class BuyerResolver {
   }
 
   @Mutation(() => Buyer)
-  updateBuyer(@Args('updateBuyerInput') updateBuyerInput: UpdateBuyerInput) {
-    return this.buyerService.update(updateBuyerInput._id, updateBuyerInput);
+  updateBuyer(
+    @Args('_id') id: string,
+    @Args('updateBuyerInput') updateBuyerInput: UpdateBuyerInput,
+  ) {
+    return this.buyerService.update(id, updateBuyerInput);
   }
 
-  @Mutation(() => Buyer)
-  removeBuyer(@Args('id', { type: () => Int }) id: string) {
+  @Mutation(() => Boolean)
+  removeBuyer(@Args('_id') id: string) {
     return this.buyerService.remove(id);
   }
 
   @Mutation(() => LoggedBuyerOutput)
-  loginBuyer(@Args('loginBuyerInput') LoginBuyerInput: LoginBuyerInput) {
-    return this.buyerService.loginBuyer(LoginBuyerInput);
+  loginBuyer(
+    @Args('loginBuyerInput') LoginBuyerInput: LoginBuyerInput,
+    @Context() ctx: any,
+  ) {
+    // res.set('Set-Cookie', `${'test'}=${'test'}`);
+    return this.buyerService.loginBuyer(LoginBuyerInput, ctx);
   }
 
   // @UseGuards(JwtAuthGuard)
-  // @Mutation(() => Boolean)
-  // logoutBuyer(@Args('_id') id: string) {
-  //   return this.usersService.logout(id);
-  // }
+  @Mutation(() => Boolean)
+  logoutBuyer(@Context() ctx: any) {
+    return this.buyerService.logout(ctx);
+  }
 }

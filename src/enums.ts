@@ -4,8 +4,8 @@ export enum TypeVendeur {
 }
 
 export enum TypeCompte {
-  ENTREPRISE = 'Entreprise',
-  AUTO_ENTREPRENEUR = 'Auto_Entrepreneur',
+  ENTREPRISE = 'entreprise',
+  AUTO_ENTREPRENEUR = 'autoEntrepreneur',
 }
 
 export enum Civilite {

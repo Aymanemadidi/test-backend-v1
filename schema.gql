@@ -18,14 +18,6 @@ type User {
   role: String!
 }
 
-type LoggedUserOutput {
-  """Generated access_token of the user"""
-  access_token: String!
-
-  """Generated refresh_token of the user"""
-  refresh_token: String!
-}
-
 type Buyer {
   _id: String!
 
@@ -75,16 +67,11 @@ type Buyer {
   pseudo: String
 }
 
-type LoggedBuyerOutput {
-  """Generated access_token of the buyer"""
-  access_token: String!
-
-  """Generated refresh_token of the buyer"""
-  refresh_token: String!
-}
-
 type Seller {
   _id: String!
+
+  """Seller userId """
+  userId: String
 
   """Seller firstName """
   firstName: String!
@@ -137,6 +124,24 @@ type Seller {
   """Seller adresse """
   adresse: String!
 
+  """Seller Company adresse """
+  companyAdresse: String!
+
+  """Seller legal adresse """
+  legalAdresse: String
+
+  """Seller refund adresse """
+  refundAdresse: String
+
+  """Seller number of employees """
+  numberOfEmployees: String!
+
+  """Seller civilite """
+  civilite: String!
+
+  """Seller TVA intra """
+  tvaIntra: String!
+
   """Seller codePostal """
   codePostal: String!
 
@@ -158,8 +163,33 @@ type Seller {
   """Seller logo """
   logo: String
 
+  """Seller last connected """
+  created_at: DateTime
+
   """Seller Pseudo """
   pseudo: String
+
+  """Statut moderation seller"""
+  statut_moderation: String
+  statut: String
+  isArchived: Boolean
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type LoggedUserOutput {
+  _id: String!
+}
+
+type LoggedBuyerOutput {
+  """Generated access_token of the buyer"""
+  access_token: String!
+
+  """Generated refresh_token of the buyer"""
+  refresh_token: String!
 }
 
 type LoggedSellerOutput {
@@ -173,10 +203,12 @@ type LoggedSellerOutput {
 type Query {
   users: [User!]!
   user(_id: String!): User!
+  getMe: User!
   buyers: [Buyer!]!
   buyer(id: String!): Buyer!
   sellers: [Seller!]!
-  seller(id: String!): Seller!
+  sellersOcc(email: String!, nomEntreprise: String!, pseudo: String!, startDate: String!, endDate: String!): [Seller!]!
+  seller(_id: String!): Seller!
 }
 
 type Mutation {
@@ -184,19 +216,22 @@ type Mutation {
   createAdminBySupAdm(createUserInput: CreateUserInput!): User!
   archiveUser(_id: String!): Boolean!
   updateUser(updateUserInput: UpdateUserInput!): User!
-  removeUser(_id: String!): User!
+  removeUser(_id: String!): Boolean!
   loginUser(loginUserInput: LoginUserInput!): LoggedUserOutput!
-  logoutUser(_id: String!): Boolean!
+  logoutUser: Boolean!
+  refresh(_id: String!, rt: String!): LoggedUserOutput!
   createBuyer(createBuyerInput: CreateBuyerInput!): LoggedBuyerOutput!
   createBuyerByAdm(createBuyerInput: CreateBuyerInput!): Buyer!
-  updateBuyer(updateBuyerInput: UpdateBuyerInput!): Buyer!
-  removeBuyer(id: Int!): Buyer!
+  updateBuyer(_id: String!, updateBuyerInput: UpdateBuyerInput!): Buyer!
+  removeBuyer(_id: String!): Boolean!
   loginBuyer(loginBuyerInput: LoginBuyerInput!): LoggedBuyerOutput!
-  createSeller(createSellerInput: CreateSellerInput!): LoggedSellerOutput!
+  logoutBuyer: Boolean!
+  createSeller(createSellerInput: CreateSellerInput!): Seller!
   createSellerByAdm(createSellerInput: CreateSellerInput!): Seller!
-  updateSeller(updateSellerInput: UpdateSellerInput!): Seller!
-  removeSeller(id: Int!): Seller!
+  updateSeller(_id: String!, updateSellerInput: UpdateSellerInput!): Seller!
+  removeSeller(_id: String!): Boolean!
   loginSeller(loginSellerInput: LoginSellerInput!): LoggedSellerOutput!
+  logoutSeller: Boolean!
 }
 
 input CreateUserInput {
@@ -348,7 +383,6 @@ input UpdateBuyerInput {
   """User hashed password"""
   password: String
   pseudo: String
-  _id: Int!
 }
 
 input LoginBuyerInput {
@@ -411,6 +445,18 @@ input CreateSellerInput {
   """Seller adresse """
   adresse: String!
 
+  """Seller company adresse """
+  companyAdresse: String!
+
+  """Seller number of employees """
+  numberOfEmployees: String!
+
+  """Seller civilite """
+  civilite: String!
+
+  """Seller TVA intra """
+  tvaIntra: String!
+
   """Seller codePostal """
   codePostal: String!
 
@@ -434,7 +480,9 @@ input CreateSellerInput {
 
   """User hashed password"""
   password: String!
-  pseudo: String!
+  statut_moderation: Boolean!
+  statut: String!
+  isArchived: Boolean!
 }
 
 input UpdateSellerInput {
@@ -489,6 +537,18 @@ input UpdateSellerInput {
   """Seller adresse """
   adresse: String
 
+  """Seller company adresse """
+  companyAdresse: String
+
+  """Seller number of employees """
+  numberOfEmployees: String
+
+  """Seller civilite """
+  civilite: String
+
+  """Seller TVA intra """
+  tvaIntra: String
+
   """Seller codePostal """
   codePostal: String
 
@@ -512,8 +572,9 @@ input UpdateSellerInput {
 
   """User hashed password"""
   password: String
-  pseudo: String
-  _id: String!
+  statut_moderation: Boolean
+  statut: String
+  isArchived: Boolean
 }
 
 input LoginSellerInput {

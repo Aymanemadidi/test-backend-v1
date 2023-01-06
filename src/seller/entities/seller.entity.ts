@@ -17,6 +17,7 @@ export class Seller {
   @Field(() => String)
   _id: MongooseSchema.Types.ObjectId;
   @Prop()
+  @Field(() => String, { description: 'Seller userId ', nullable: true })
   userId: MongooseSchema.Types.ObjectId;
   @Prop()
   @Field(() => String, { description: 'Seller firstName ' })
@@ -70,6 +71,27 @@ export class Seller {
   @Field(() => String, { description: 'Seller adresse ' })
   adresse: string;
   @Prop()
+  @Field(() => String, { description: 'Seller Company adresse ' })
+  companyAdresse: string;
+  @Prop()
+  @Field(() => String, { description: 'Seller legal adresse ', nullable: true })
+  legalAdresse: string;
+  @Prop()
+  @Field(() => String, {
+    description: 'Seller refund adresse ',
+    nullable: true,
+  })
+  refundAdresse: string;
+  @Prop()
+  @Field(() => String, { description: 'Seller number of employees ' })
+  numberOfEmployees: string;
+  @Prop()
+  @Field(() => String, { description: 'Seller civilite ' })
+  civilite: string;
+  @Prop()
+  @Field(() => String, { description: 'Seller TVA intra ' })
+  tvaIntra: string;
+  @Prop()
   @Field(() => String, { description: 'Seller codePostal ' })
   codePostal: string;
   @Prop()
@@ -94,11 +116,12 @@ export class Seller {
   // @Field(() => String, { description: 'User hashed password' })
   password: string;
   @Prop()
-  created_at: number;
+  @Field(() => Date, { description: 'Seller last connected ', nullable: true })
+  created_at: Date;
   @Prop()
-  last_connected: number;
+  last_connected: Date;
   @Prop()
-  time_connected: number;
+  time_connected: string;
   @Prop()
   isConnected: boolean;
   @Prop()
@@ -107,9 +130,23 @@ export class Seller {
   @Prop()
   isPro: boolean;
   @Prop()
+  @Field(() => String, {
+    description: 'Statut moderation seller',
+    nullable: true,
+  })
   statut_moderation: boolean;
   @Prop()
+  @Field(() => String, { nullable: true })
   statut: StatutSeller;
+  @Prop()
+  @Field(() => Boolean, {
+    description: 'Seller verified status ',
+    nullable: true,
+  })
+  @Prop()
+  @Field(() => Boolean, { nullable: true })
+  isArchived: boolean;
+  verified: boolean;
 }
 
 export const SellerSchema = SchemaFactory.createForClass(Seller);

@@ -14,7 +14,7 @@ import { UsersService } from 'src/users/users.service';
     forwardRef(() => UsersModule),
     JwtModule.register({}),
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, Jwt_Rt_Strategy],
   exports: [AuthService],
 })
 export class AuthModule {}

@@ -63,11 +63,11 @@ export class Buyer {
   // @Field(() => String, { description: 'User hashed password' })
   password: string;
   @Prop()
-  created_at: number;
+  created_at: Date;
   @Prop()
-  last_connected: number;
+  last_connected: Date;
   @Prop()
-  time_connected: number;
+  time_connected: string;
   @Prop()
   isConnected: boolean;
   @Prop()

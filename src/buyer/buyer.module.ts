@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Buyer, BuyerSchema } from './entities/buyer.entity';
 import { UserSchema } from '../users/entities/user.entity';
 import { CommonModule } from '../common/common.module';
+import { AuthService } from '../common/auth/services/auth.service';
 import { User } from '../users/entities/user.entity';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from 'src/users/users.service';

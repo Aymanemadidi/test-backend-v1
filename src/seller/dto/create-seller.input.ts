@@ -40,6 +40,14 @@ export class CreateSellerInput {
   codeNAF: string;
   @Field(() => String, { description: 'Seller adresse ' })
   adresse: string;
+  @Field(() => String, { description: 'Seller company adresse ' })
+  companyAdresse: string;
+  @Field(() => String, { description: 'Seller number of employees ' })
+  numberOfEmployees: string;
+  @Field(() => String, { description: 'Seller civilite ' })
+  civilite: string;
+  @Field(() => String, { description: 'Seller TVA intra ' })
+  tvaIntra: string;
   @Field(() => String, { description: 'Seller codePostal ' })
   codePostal: string;
   @Field(() => String, { description: 'Seller ville ' })
@@ -58,19 +66,21 @@ export class CreateSellerInput {
   @Field(() => String, { description: 'User hashed password' })
   password: string;
   // @Field(() => Number)
-  created_at: number;
+  created_at: Date;
   // @Field(() => Number)
-  last_connected: number;
+  last_connected: Date;
   // @Field(() => Number)
   // time_connected: number;
   // @Field(() => Boolean)
   isConnected: boolean;
-  @Field(() => String)
+  // @Field(() => String)
   pseudo: string;
   // @Field(() => Boolean)
   isPro: boolean;
-  // @Field(() => Boolean)
+  @Field(() => Boolean)
   statut_moderation: boolean;
-  // @Field(() => String)
+  @Field(() => String)
   statut: StatutSeller;
+  @Field(() => Boolean)
+  isArchived: boolean;
 }
