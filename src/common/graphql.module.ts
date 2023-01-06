@@ -12,7 +12,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       cors: {
         origin:
           // process.env.NODE_ENV === 'production'
-          'https://frontend-v1-git-dev-spare-place.vercel.app',
+          'https://frontend-test-v1-rho.vercel.app/',
         // :
         // 'http://localhost:5000',
 
