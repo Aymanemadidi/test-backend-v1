@@ -150,7 +150,10 @@ export class UsersService {
         path: '/',
       });
       ctx.res.setHeader('Set-Cookie', [serialisedA, serialisedR]);
-      ctx.res.setHeader('Access-Control-Allow-Credentials', 'true');
+      ctx.res.setHeader(
+        'Access-Control-Allow-Credentials',
+        'https://frontend-test-v1-rho.vercel.app',
+      );
       await this.updateRtHash(user.id, tokens.refresh_token);
       return user;
     }
