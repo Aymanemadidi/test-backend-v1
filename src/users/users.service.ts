@@ -154,6 +154,7 @@ export class UsersService {
         'Access-Control-Allow-Origin':
           'https://frontend-test-v1-rho.vercel.app',
       });
+      console.log(ctx.res);
       await this.updateRtHash(user.id, tokens.refresh_token);
       return user;
     }
