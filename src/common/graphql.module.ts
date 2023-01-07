@@ -8,6 +8,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       driver: ApolloDriver,
       autoSchemaFile: './schema.gql',
       playground: true,
+      cache: 'bounded',
       context: ({ req, res }) => ({ req, res }),
       cors: {
         origin:
