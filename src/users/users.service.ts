@@ -234,6 +234,10 @@ export class UsersService {
   async getMe(ctx: any) {
     console.log(ctx.req.cookies);
     const at = ctx.req.cookies['access_token'];
+    ctx.res.setHeader(
+      'Access-Control-Allow-Credentials',
+      'https://frontend-test-v1-rho.vercel.app',
+    );
     if (!at) {
       throw new NotFoundException();
     }
