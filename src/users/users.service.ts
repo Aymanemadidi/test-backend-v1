@@ -150,10 +150,10 @@ export class UsersService {
         path: '/',
       });
       ctx.res.setHeader('Set-Cookie', [serialisedA, serialisedR]);
-      ctx.res.set({
-        'Access-Control-Allow-Origin':
-          'https://frontend-test-v1-rho.vercel.app',
-      });
+      ctx.res.setHeader(
+        'Access-Control-Allow-Origin',
+        'https://frontend-test-v1-rho.vercel.app',
+      );
       console.log(ctx.res);
       await this.updateRtHash(user.id, tokens.refresh_token);
       return user;
