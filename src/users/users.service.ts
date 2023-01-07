@@ -151,7 +151,7 @@ export class UsersService {
       });
       ctx.res.setHeader('Set-Cookie', [serialisedA, serialisedR]);
       ctx.res.setHeader(
-        'Access-Control-Allow-Credentials',
+        'Access-Control-Allow-Origin',
         'https://frontend-test-v1-rho.vercel.app',
       );
       await this.updateRtHash(user.id, tokens.refresh_token);
@@ -235,7 +235,7 @@ export class UsersService {
     console.log(ctx.req.cookies);
     const at = ctx.req.cookies['access_token'];
     ctx.res.setHeader(
-      'Access-Control-Allow-Credentials',
+      'Access-Control-Allow-Origin',
       'https://frontend-test-v1-rho.vercel.app',
     );
     if (!at) {
