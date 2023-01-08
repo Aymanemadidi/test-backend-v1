@@ -30,14 +30,30 @@ export class CreateBuyerInput {
   nomEntreprise: string;
   @Field(() => String, { description: 'Buyer typeCompte ', nullable: true })
   typeCompte: TypeCompte;
-  @Field(() => String, { description: 'Buyer codePostal ' })
+  @Field(() => String, { description: 'Buyer adresse ' })
+  adresse: string;
+  @Field(() => String, { description: 'Buyer company adresse ' })
+  companyAdresse: string;
+  @Field(() => String, { description: 'Buyer code postal ' })
   codePostal: string;
+  @Field(() => String, { description: 'Buyer company code postal ' })
+  companyCodePostal: string;
   @Field(() => String, { description: 'Buyer ville ' })
   ville: string;
+  @Field(() => String, { description: 'Buyer company ville ' })
+  companyVille: string;
   @Field(() => String, { description: 'Buyer pays ' })
   pays: string;
+  @Field(() => String, { description: 'Buyer company pays ' })
+  companyPays: string;
   @Field(() => String, { description: 'Buyer website ', nullable: true })
   website: string;
+  @Field(() => String, { description: 'Seller departement ' })
+  departement: string;
+  @Field(() => String, { description: 'Seller civilite ' })
+  civilite: string;
+  @Field(() => String, { description: 'Seller TVA intra ' })
+  tvaIntra: string;
   userId: MongooseSchema.Types.ObjectId;
   @Field(() => String, { description: 'User hashed password' })
   password: string;
@@ -48,8 +64,8 @@ export class CreateBuyerInput {
   // time_connected: number;
   // @Field(() => Boolean)
   isConnected: boolean;
-  @Field(() => String)
-  pseudo: string;
   // @Field(() => String)
+  pseudo: string;
+  @Field(() => String)
   statut: StatutBuyer;
 }

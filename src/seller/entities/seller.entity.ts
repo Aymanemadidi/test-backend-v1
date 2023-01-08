@@ -95,17 +95,26 @@ export class Seller {
   @Field(() => String, { description: 'Seller codePostal ' })
   codePostal: string;
   @Prop()
+  @Field(() => String, { description: 'Seller company codePostal ' })
+  companyCodePostal: string;
+  @Prop()
   @Field(() => String, { description: 'Seller ville ' })
   ville: string;
   @Prop()
-  @Field(() => String, { description: 'Seller departement ' })
-  departement: string;
+  @Field(() => String, { description: 'Seller Company ville ' })
+  companyVille: string;
+  @Prop()
   @Prop()
   @Field(() => String, { description: 'Seller pays ' })
   pays: string;
   @Prop()
+  @Field(() => String, { description: 'Seller pays ' })
+  companyPays: string;
+  @Prop()
   @Field(() => String, { description: 'Seller IBAN ', nullable: true })
   IBAN: string;
+  @Field(() => String, { description: 'Seller departement ', nullable: true })
+  departement: string;
   @Prop()
   @Field(() => String, { description: 'Seller website ', nullable: true })
   website: string;

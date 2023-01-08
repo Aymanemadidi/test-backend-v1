@@ -15,6 +15,7 @@ export enum StatutBuyer {
 export class Buyer {
   @Field(() => String)
   _id: MongooseSchema.Types.ObjectId;
+  @Field(() => String, { description: 'Seller userId ', nullable: true })
   @Prop()
   userId: MongooseSchema.Types.ObjectId;
   @Prop()
@@ -51,6 +52,30 @@ export class Buyer {
   @Field(() => String, { description: 'Buyer nomEntreprise ' })
   nomEntreprise: string;
   @Prop()
+  @Field(() => String, { description: 'Buyer adresse ' })
+  adresse: string;
+  @Prop()
+  @Field(() => String, { description: 'Buyer company adresse ' })
+  companyAdresse: string;
+  @Prop()
+  @Field(() => String, { description: 'Buyer code postal ' })
+  codePostal: string;
+  @Prop()
+  @Field(() => String, { description: 'Buyer company code postal ' })
+  companyCodePostal: string;
+  @Prop()
+  @Field(() => String, { description: 'Buyer ville ' })
+  ville: string;
+  @Prop()
+  @Field(() => String, { description: 'Buyer company ville ' })
+  companyVille: string;
+  @Prop()
+  @Field(() => String, { description: 'Buyer pays ' })
+  pays: string;
+  @Prop()
+  @Field(() => String, { description: 'Buyer company pays ' })
+  companyPays: string;
+  @Prop()
   @Field(() => Int, { description: 'Buyer Siret number ' })
   numeroSiret: number;
   @Prop()
@@ -59,6 +84,12 @@ export class Buyer {
   @Prop()
   @Field(() => String, { description: 'Buyer civilite ', nullable: true })
   civilite: Civilite;
+  @Prop()
+  @Field(() => String, { description: 'Seller TVA intra ' })
+  tvaIntra: string;
+  @Prop()
+  @Field(() => String, { description: 'Seller departement ', nullable: true })
+  departement: string;
   @Prop()
   // @Field(() => String, { description: 'User hashed password' })
   password: string;
@@ -74,6 +105,7 @@ export class Buyer {
   @Field(() => String, { description: 'Buyer Pseudo ', nullable: true })
   pseudo: string;
   @Prop()
+  @Field(() => String, { description: 'Buyer Statut ', nullable: true })
   statut: StatutBuyer;
 }
 

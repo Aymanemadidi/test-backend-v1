@@ -28,7 +28,7 @@ export class BuyerService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
-  async create(createBuyerInput: CreateBuyerInput): Promise<LoggedBuyerOutput> {
+  async create(createBuyerInput: CreateBuyerInput): Promise<Buyer> {
     const user = await this.userModel
       .findOne({ email: createBuyerInput.email })
       .exec();
@@ -57,7 +57,7 @@ export class BuyerService {
     finalUser.save();
     const tokens = await this.authService.generateUserCredentials(buyerUser);
     await this.usersService.updateRtHash(buyerUser.id, tokens.refresh_token);
-    return tokens;
+    return finalUser;
   }
 
   findAll() {

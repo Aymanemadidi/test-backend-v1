@@ -50,12 +50,18 @@ export class CreateSellerInput {
   tvaIntra: string;
   @Field(() => String, { description: 'Seller codePostal ' })
   codePostal: string;
+  @Field(() => String, { description: 'Seller company codePostal ' })
+  companyCodePostal: string;
   @Field(() => String, { description: 'Seller ville ' })
   ville: string;
+  @Field(() => String, { description: 'Seller company ville ' })
+  companyVille: string;
   @Field(() => String, { description: 'Seller departement ' })
   departement: string;
   @Field(() => String, { description: 'Seller pays ' })
   pays: string;
+  @Field(() => String, { description: 'Seller company pays ' })
+  companyPays: string;
   @Field(() => String, { description: 'Seller IBAN ', nullable: true })
   IBAN: string;
   @Field(() => String, { description: 'Seller website ', nullable: true })

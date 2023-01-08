@@ -20,7 +20,7 @@ export class BuyerResolver {
     private readonly usersService: UsersService,
   ) {}
 
-  @Mutation(() => LoggedBuyerOutput)
+  @Mutation(() => Buyer)
   createBuyer(@Args('createBuyerInput') createBuyerInput: CreateBuyerInput) {
     return this.buyerService.create(createBuyerInput);
   }
