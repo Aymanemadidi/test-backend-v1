@@ -417,7 +417,7 @@ export class UsersService {
         'Access-Control-Allow-Origin',
         `${
           process.env.NODE_ENV === 'production'
-            ? this.config.get('FRONTEND_URI')
+            ? 'https://frontend-test-v1.vercel.app'
             : 'http://localhost:5000'
         }`,
       );
@@ -506,7 +506,7 @@ export class UsersService {
       'Access-Control-Allow-Origin',
       `${
         process.env.NODE_ENV === 'production'
-          ? this.config.get('FRONTEND_URI')
+          ? 'https://frontend-test-v1.vercel.app'
           : 'http://localhost:5000'
       }`,
     );
