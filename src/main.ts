@@ -6,6 +6,7 @@ import helmet from 'helmet';
 
 async function bootstrap() {
   console.log('process.env.NODE_ENV', process.env.NODE_ENV);
+  console.log('process.env.FRONTEND_URI', process.env.FRONTEND_URI);
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(
     new ValidationPipe({

@@ -14,7 +14,7 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
       cors: {
         origin: `${
           process.env.NODE_ENV === 'production'
-            ? process.env.FRONTEND_URI
+            ? 'https://frontend-test-v1.vercel.app'
             : 'http://localhost:5000'
         }`,
         credentials: true,

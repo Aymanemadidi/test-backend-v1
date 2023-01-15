@@ -17,6 +17,7 @@ import { UsersService } from '../users/users.service';
 import { LoggedSellerOutput } from './dto/loged-seller.output';
 import { serialize } from 'cookie';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SellerService {
@@ -28,6 +29,7 @@ export class SellerService {
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private config: ConfigService,
   ) {}
   async create(
     createSellerInput: CreateSellerInput,
@@ -82,13 +84,13 @@ export class SellerService {
       maxAge: 7 * 24 * 60 * 60,
       path: '/',
     });
-    console.log(process.env.FRONTEND_URI);
+    console.log(this.config.get('FRONTEND_URI'));
     ctx.res.setHeader('Set-Cookie', [serialisedA, serialisedR]);
     ctx.res.setHeader(
       'Access-Control-Allow-Origin',
       `${
         process.env.NODE_ENV === 'production'
-          ? process.env.FRONTEND_URI
+          ? this.config.get('FRONTEND_URI')
           : 'http://localhost:5000'
       }`,
     );
@@ -272,7 +274,7 @@ export class SellerService {
         'Access-Control-Allow-Origin',
         `${
           process.env.NODE_ENV === 'production'
-            ? process.env.FRONTEND_URI
+            ? this.config.get('FRONTEND_URI')
             : 'http://localhost:5000'
         }`,
       );

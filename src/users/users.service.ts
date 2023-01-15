@@ -417,7 +417,7 @@ export class UsersService {
         'Access-Control-Allow-Origin',
         `${
           process.env.NODE_ENV === 'production'
-            ? process.env.FRONTEND_URI
+            ? this.config.get('FRONTEND_URI')
             : 'http://localhost:5000'
         }`,
       );
@@ -506,7 +506,7 @@ export class UsersService {
       'Access-Control-Allow-Origin',
       `${
         process.env.NODE_ENV === 'production'
-          ? process.env.FRONTEND_URI
+          ? this.config.get('FRONTEND_URI')
           : 'http://localhost:5000'
       }`,
     );

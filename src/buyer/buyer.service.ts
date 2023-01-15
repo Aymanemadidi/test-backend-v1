@@ -16,6 +16,7 @@ import { UsersService } from '../users/users.service';
 import { LoggedBuyerOutput } from './dto/loged-buyer.output';
 import { serialize } from 'cookie';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class BuyerService {
@@ -27,6 +28,7 @@ export class BuyerService {
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private config: ConfigService,
   ) {}
   async create(createBuyerInput: CreateBuyerInput, ctx: any): Promise<Buyer> {
     const user = await this.userModel
@@ -83,7 +85,7 @@ export class BuyerService {
       'Access-Control-Allow-Origin',
       `${
         process.env.NODE_ENV === 'production'
-          ? process.env.FRONTEND_URI
+          ? this.config.get('FRONTEND_URI')
           : 'http://localhost:5000'
       }`,
     );
@@ -248,7 +250,7 @@ export class BuyerService {
         'Access-Control-Allow-Origin',
         `${
           process.env.NODE_ENV === 'production'
-            ? process.env.FRONTEND_URI
+            ? this.config.get('FRONTEND_URI')
             : 'http://localhost:5000'
         }`,
       );
