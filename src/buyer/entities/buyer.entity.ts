@@ -94,6 +94,7 @@ export class Buyer {
   // @Field(() => String, { description: 'User hashed password' })
   password: string;
   @Prop()
+  @Field(() => Date, { description: 'Seller created_at ', nullable: true })
   created_at: Date;
   @Prop()
   last_connected: Date;
@@ -105,8 +106,15 @@ export class Buyer {
   @Field(() => String, { description: 'Buyer Pseudo ', nullable: true })
   pseudo: string;
   @Prop()
-  @Field(() => String, { description: 'Buyer Statut ', nullable: true })
+  @Field(() => String, {
+    description: 'Buyer Statut ',
+    nullable: true,
+    defaultValue: 'new',
+  })
   statut: StatutBuyer;
+  @Prop()
+  @Field(() => Boolean, { nullable: true })
+  isArchived: boolean;
 }
 
 export const BuyerSchema = SchemaFactory.createForClass(Buyer);

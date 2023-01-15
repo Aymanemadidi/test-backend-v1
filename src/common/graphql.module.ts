@@ -12,7 +12,11 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
       cache: 'bounded',
       context: ({ req, res }) => ({ req, res }),
       cors: {
-        origin: 'https://frontend-test-v1-rho.vercel.app',
+        origin: `${
+          process.env.NODE_ENV === 'production'
+            ? process.env.FRONTEND_URI
+            : 'http://localhost:5000'
+        }`,
         credentials: true,
       },
     }),

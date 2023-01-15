@@ -21,8 +21,11 @@ export class BuyerResolver {
   ) {}
 
   @Mutation(() => Buyer)
-  createBuyer(@Args('createBuyerInput') createBuyerInput: CreateBuyerInput) {
-    return this.buyerService.create(createBuyerInput);
+  createBuyer(
+    @Args('createBuyerInput') createBuyerInput: CreateBuyerInput,
+    @Context() ctx: any,
+  ) {
+    return this.buyerService.create(createBuyerInput, ctx);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -31,7 +34,7 @@ export class BuyerResolver {
   createBuyerByAdm(
     @Args('createBuyerInput') createBuyerInput: CreateBuyerInput,
   ) {
-    return this.buyerService.create(createBuyerInput);
+    return this.buyerService.createByAdm(createBuyerInput);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -41,8 +44,27 @@ export class BuyerResolver {
     return this.buyerService.findAll();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Roles([Role.ADMIN, Role.SUPADMIN])
+  @Query(() => [Buyer], { name: 'buyersOcc' })
+  findAllWithOccurence(
+    @Args('email', { type: () => String }) email: string,
+    @Args('nomEntreprise', { type: () => String }) nomEntreprise: string,
+    @Args('pseudo', { type: () => String }) pseudo: string,
+    @Args('startDate', { type: () => String }) startDate: string,
+    @Args('endDate', { type: () => String }) endDate: string,
+  ) {
+    return this.buyerService.findAllWithOccurence(
+      email,
+      nomEntreprise,
+      pseudo,
+      startDate,
+      endDate,
+    );
+  }
+
   @Query(() => Buyer, { name: 'buyer' })
-  findOne(@Args('id', { type: () => String }) id: string) {
+  findOne(@Args('_id', { type: () => String }) id: string) {
     return this.buyerService.findOne(id);
   }
 
@@ -68,7 +90,7 @@ export class BuyerResolver {
     return this.buyerService.loginBuyer(LoginBuyerInput, ctx);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => Boolean)
   logoutBuyer(@Context() ctx: any) {
     return this.buyerService.logout(ctx);

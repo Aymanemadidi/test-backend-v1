@@ -50,6 +50,10 @@ export class UsersService {
     const hash = await bcrypt.hash(createUserInput.password, saltOrRounds);
     createUserInput.password = hash;
     const finalUser = new this.userModel(createUserInput);
+    if (finalUser.role === 'Admin') {
+      finalUser.statut = 'actif';
+      finalUser.created_at = new Date();
+    }
     finalUser.save();
     const tokens = await this.authService.generateUserCredentials(finalUser);
     await this.updateRtHash(finalUser.id, tokens.refresh_token);
@@ -66,6 +70,265 @@ export class UsersService {
       throw new NotFoundException(`User not found!`);
     }
     return user;
+  }
+
+  async findAllWithOccurence(
+    email,
+    nomEntreprise,
+    pseudo,
+    startDate,
+    endDate,
+    statut,
+    type,
+  ) {
+    console.log('email ', email);
+    console.log('nomEntreprise ', nomEntreprise);
+    console.log('pseudo ', pseudo);
+    console.log('startDate: ', startDate);
+    console.log('endDate: ', endDate);
+    console.log('statut ', statut);
+    console.log('type ', type);
+    if (statut === 'all') {
+      statut === '';
+    }
+    let sd = new Date(0);
+    let ed = new Date();
+    const e = email;
+    const n = nomEntreprise;
+    const p = pseudo;
+    const s = statut;
+    if (startDate !== '') {
+      sd = new Date(startDate);
+      console.log('sd: ', sd);
+    }
+    if (endDate !== '') {
+      const ded = new Date(endDate);
+      const fed = ded.setDate(ded.getDate() + 1);
+      ed = new Date(fed);
+      console.log('ed: ', ed);
+    }
+    const regex = new RegExp(e, 'i'); // i for case insensitive
+    const regexn = new RegExp(n, 'i'); // i for case insensitive
+    const regexp = new RegExp(p, 'i'); // i for case insensitive
+    const regexs = new RegExp(s, 'i'); // i for case insensitive
+
+    // --------------- Search Logic Start ----------------- //
+
+    if (type === 'admin') {
+      return this.userModel.find({
+        email: { $regex: regex },
+        nomEntreprise: { $regex: regexn },
+        pseudo: { $regex: regexp },
+        created_at: { $gte: sd, $lt: ed },
+        statut: { $regex: regexs },
+        role: 'Admin',
+      });
+    } else if (type === 'seller') {
+      const sellers = await this.userModel.aggregate([
+        {
+          $lookup: {
+            from: 'sellers',
+            localField: '_id',
+            foreignField: 'userId',
+            pipeline: [
+              { $match: { email: regex } },
+              { $match: { pseudo: regexp } },
+              { $match: { nomEntreprise: regexn } },
+              {
+                $match: {
+                  statut:
+                    statut === 'inactif'
+                      ? 'inactif'
+                      : statut === 'actif'
+                      ? 'actif'
+                      : regexs,
+                },
+              },
+              { $match: { created_at: { $gte: sd, $lt: ed } } },
+            ],
+            as: 'seller',
+          },
+        },
+        { $unwind: '$seller' },
+      ]);
+      return sellers;
+    } else if (type === 'buyer') {
+      const buyers = await this.userModel.aggregate([
+        {
+          $lookup: {
+            from: 'buyers',
+            localField: '_id',
+            foreignField: 'userId',
+            pipeline: [
+              { $match: { email: regex } },
+              { $match: { pseudo: regexp } },
+              { $match: { nomEntreprise: regexn } },
+              {
+                $match: {
+                  statut:
+                    statut === 'inactif'
+                      ? 'inactif'
+                      : statut === 'actif'
+                      ? 'actif'
+                      : regexs,
+                },
+              },
+              { $match: { created_at: { $gte: sd, $lt: ed } } },
+            ],
+            as: 'buyer',
+          },
+        },
+        { $unwind: '$buyer' },
+      ]);
+      return buyers;
+    }
+
+    if (statut !== '' && pseudo === '' && nomEntreprise === '') {
+      console.log('statut check');
+      const admins = await this.userModel.find({
+        role: 'Admin',
+        statut: { $regex: regexs },
+      });
+      const sellers = await this.userModel.aggregate([
+        {
+          $lookup: {
+            from: 'sellers',
+            localField: '_id',
+            foreignField: 'userId',
+            pipeline: [
+              {
+                $match: {
+                  statut:
+                    statut === 'inactif'
+                      ? 'inactif'
+                      : statut === 'actif'
+                      ? 'actif'
+                      : regexs,
+                },
+              },
+            ],
+            as: 'seller',
+          },
+        },
+        { $unwind: '$seller' },
+      ]);
+      // console.log(sellers);
+      const buyers = await this.userModel.aggregate([
+        {
+          $lookup: {
+            from: 'buyers',
+            localField: '_id',
+            foreignField: 'userId',
+            pipeline: [
+              {
+                $match: {
+                  statut:
+                    statut === 'inactif'
+                      ? 'inactif'
+                      : statut === 'actif'
+                      ? 'actif'
+                      : regexs,
+                },
+              },
+            ],
+            as: 'buyer',
+          },
+        },
+        { $unwind: '$buyer' },
+      ]);
+      return [...admins, ...sellers, ...buyers];
+    }
+
+    if (pseudo !== '' || nomEntreprise !== '') {
+      console.log('seller/buyer only check');
+      const sellers = await this.userModel.aggregate([
+        {
+          $lookup: {
+            from: 'sellers',
+            localField: '_id',
+            foreignField: 'userId',
+            pipeline: [
+              { $match: { email: regex } },
+              { $match: { pseudo: regexp } },
+              { $match: { nomEntreprise: regexn } },
+              {
+                $match: {
+                  statut:
+                    statut === 'inactif'
+                      ? 'inactif'
+                      : statut === 'actif'
+                      ? 'actif'
+                      : regexs,
+                },
+              },
+              { $match: { created_at: { $gte: sd, $lt: ed } } },
+            ],
+            as: 'seller',
+          },
+        },
+        { $unwind: '$seller' },
+      ]);
+      // console.log(sellers);
+      const buyers = await this.userModel.aggregate([
+        {
+          $lookup: {
+            from: 'buyers',
+            localField: '_id',
+            foreignField: 'userId',
+            pipeline: [
+              { $match: { email: regex } },
+              { $match: { pseudo: regexp } },
+              { $match: { nomEntreprise: regexn } },
+              {
+                $match: {
+                  statut:
+                    statut === 'inactif'
+                      ? 'inactif'
+                      : statut === 'actif'
+                      ? 'actif'
+                      : regexs,
+                },
+              },
+              { $match: { created_at: { $gte: sd, $lt: ed } } },
+            ],
+            as: 'buyer',
+          },
+        },
+        { $unwind: '$buyer' },
+      ]);
+      // console.log(buyers);
+      return [...sellers, ...buyers];
+    }
+    return this.findAll2();
+  }
+
+  async findAll2() {
+    const admins = await this.userModel.find({
+      role: 'Admin',
+    });
+    const sellers = await this.userModel.aggregate([
+      {
+        $lookup: {
+          from: 'sellers',
+          localField: '_id',
+          foreignField: 'userId',
+          as: 'seller',
+        },
+      },
+      { $unwind: '$seller' },
+    ]);
+    const buyers = await this.userModel.aggregate([
+      {
+        $lookup: {
+          from: 'buyers',
+          localField: '_id',
+          foreignField: 'userId',
+          as: 'buyer',
+        },
+      },
+      { $unwind: '$buyer' },
+    ]);
+    return [...admins, ...sellers, ...buyers];
   }
 
   async findOne(id: string): Promise<User> {
@@ -152,7 +415,11 @@ export class UsersService {
       ctx.res.setHeader('Set-Cookie', [serialisedA, serialisedR]);
       ctx.res.setHeader(
         'Access-Control-Allow-Origin',
-        'https://frontend-test-v1-rho.vercel.app',
+        `${
+          process.env.NODE_ENV === 'production'
+            ? process.env.FRONTEND_URI
+            : 'http://localhost:5000'
+        }`,
       );
       console.log(ctx.res);
       await this.updateRtHash(user.id, tokens.refresh_token);
@@ -237,7 +504,11 @@ export class UsersService {
     const at = ctx.req.cookies['access_token'];
     ctx.res.setHeader(
       'Access-Control-Allow-Origin',
-      'https://frontend-test-v1-rho.vercel.app',
+      `${
+        process.env.NODE_ENV === 'production'
+          ? process.env.FRONTEND_URI
+          : 'http://localhost:5000'
+      }`,
     );
     if (!at) {
       throw new NotFoundException();

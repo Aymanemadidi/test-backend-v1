@@ -20,11 +20,21 @@ export class User {
   @Field(() => String, { description: 'User role' })
   role: Role;
   @Prop()
+  @Field(() => String, { description: 'Admin statut', nullable: true })
+  statut: string;
+  @Prop()
+  @Field(() => String, { description: 'Admin mobile number', nullable: true })
+  mobileNumber: string;
+  @Prop()
+  @Field(() => Date, { description: 'User created_at', nullable: true })
+  created_at: Date;
+  @Prop()
   // @Field(() => String, { description: 'User hashed password' })
   password: string;
   @Prop()
   hashed_rt: string | null;
   @Prop()
+  // @Field(() => String, { description: 'User isArchived ' })
   isArchived: boolean;
 }
 

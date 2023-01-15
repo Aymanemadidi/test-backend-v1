@@ -125,7 +125,7 @@ export class Seller {
   // @Field(() => String, { description: 'User hashed password' })
   password: string;
   @Prop()
-  @Field(() => Date, { description: 'Seller last connected ', nullable: true })
+  @Field(() => Date, { description: 'Seller created_at ', nullable: true })
   created_at: Date;
   @Prop()
   last_connected: Date;
@@ -139,7 +139,7 @@ export class Seller {
   @Prop()
   isPro: boolean;
   @Prop()
-  @Field(() => String, {
+  @Field(() => Boolean, {
     description: 'Statut moderation seller',
     nullable: true,
   })
@@ -152,10 +152,10 @@ export class Seller {
     description: 'Seller verified status ',
     nullable: true,
   })
+  verified: boolean;
   @Prop()
   @Field(() => Boolean, { nullable: true })
   isArchived: boolean;
-  verified: boolean;
 }
 
 export const SellerSchema = SchemaFactory.createForClass(Seller);

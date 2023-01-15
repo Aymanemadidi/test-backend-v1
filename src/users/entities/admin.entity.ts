@@ -6,7 +6,7 @@ import { User } from './user.entity';
 @Schema()
 @ObjectType()
 export class Admin extends User {
-  @Prop()
-  @Field(() => Boolean)
-  statut: boolean;
+  // @Prop()
+  // @Field(() => Boolean)
+  // statut: boolean;
 }

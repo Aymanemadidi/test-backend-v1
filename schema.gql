@@ -16,10 +16,27 @@ type User {
 
   """User role"""
   role: String!
+
+  """Admin statut"""
+  statut: String
+
+  """Admin mobile number"""
+  mobileNumber: String
+
+  """User created_at"""
+  created_at: DateTime
 }
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
 
 type Buyer {
   _id: String!
+
+  """Seller userId """
+  userId: String
 
   """Buyer firstName """
   firstName: String!
@@ -54,6 +71,30 @@ type Buyer {
   """Buyer nomEntreprise """
   nomEntreprise: String!
 
+  """Buyer adresse """
+  adresse: String!
+
+  """Buyer company adresse """
+  companyAdresse: String!
+
+  """Buyer code postal """
+  codePostal: String!
+
+  """Buyer company code postal """
+  companyCodePostal: String!
+
+  """Buyer ville """
+  ville: String!
+
+  """Buyer company ville """
+  companyVille: String!
+
+  """Buyer pays """
+  pays: String!
+
+  """Buyer company pays """
+  companyPays: String!
+
   """Buyer Siret number """
   numeroSiret: Int!
 
@@ -63,8 +104,21 @@ type Buyer {
   """Buyer civilite """
   civilite: String
 
+  """Seller TVA intra """
+  tvaIntra: String!
+
+  """Seller departement """
+  departement: String
+
+  """Seller created_at """
+  created_at: DateTime
+
   """Buyer Pseudo """
   pseudo: String
+
+  """Buyer Statut """
+  statut: String
+  isArchived: Boolean
 }
 
 type Seller {
@@ -145,17 +199,26 @@ type Seller {
   """Seller codePostal """
   codePostal: String!
 
+  """Seller company codePostal """
+  companyCodePostal: String!
+
   """Seller ville """
   ville: String!
 
-  """Seller departement """
-  departement: String!
+  """Seller Company ville """
+  companyVille: String!
 
   """Seller pays """
   pays: String!
 
+  """Seller pays """
+  companyPays: String!
+
   """Seller IBAN """
   IBAN: String
+
+  """Seller departement """
+  departement: String
 
   """Seller website """
   website: String
@@ -163,25 +226,50 @@ type Seller {
   """Seller logo """
   logo: String
 
-  """Seller last connected """
+  """Seller created_at """
   created_at: DateTime
 
   """Seller Pseudo """
   pseudo: String
 
   """Statut moderation seller"""
-  statut_moderation: String
+  statut_moderation: Boolean
   statut: String
+
+  """Seller verified status """
+  verified: Boolean
   isArchived: Boolean
 }
 
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
 type LoggedUserOutput {
   _id: String!
+}
+
+type AllUsersOutput {
+  _id: String
+
+  """User firstName """
+  firstName: String
+
+  """User lastName """
+  lastName: String
+
+  """User email """
+  email: String
+
+  """User role"""
+  role: String
+
+  """Admin statut"""
+  statut: String
+
+  """Admin mobile number"""
+  mobileNumber: String
+
+  """User created_at"""
+  created_at: DateTime
+  seller: Seller
+  buyer: Buyer
 }
 
 type LoggedBuyerOutput {
@@ -202,10 +290,13 @@ type LoggedSellerOutput {
 
 type Query {
   users: [User!]!
-  user(_id: String!): User!
+  users2: [AllUsersOutput!]!
+  usersOcc(email: String!, nomEntreprise: String!, pseudo: String!, startDate: String!, endDate: String!, statut: String!, type: String!): [AllUsersOutput!]!
+  user(_id: String!): [User!]!
   getMe: User!
   buyers: [Buyer!]!
-  buyer(id: String!): Buyer!
+  buyersOcc(email: String!, nomEntreprise: String!, pseudo: String!, startDate: String!, endDate: String!): [Buyer!]!
+  buyer(_id: String!): Buyer!
   sellers: [Seller!]!
   sellersOcc(email: String!, nomEntreprise: String!, pseudo: String!, startDate: String!, endDate: String!): [Seller!]!
   seller(_id: String!): Seller!
@@ -220,7 +311,7 @@ type Mutation {
   loginUser(loginUserInput: LoginUserInput!): LoggedUserOutput!
   logoutUser: Boolean!
   refresh(_id: String!, rt: String!): LoggedUserOutput!
-  createBuyer(createBuyerInput: CreateBuyerInput!): LoggedBuyerOutput!
+  createBuyer(createBuyerInput: CreateBuyerInput!): Buyer!
   createBuyerByAdm(createBuyerInput: CreateBuyerInput!): Buyer!
   updateBuyer(_id: String!, updateBuyerInput: UpdateBuyerInput!): Buyer!
   removeBuyer(_id: String!): Boolean!
@@ -249,6 +340,9 @@ input CreateUserInput {
 
   """password of the user"""
   password: String!
+
+  """mobile of the Admin"""
+  mobileNumber: String
 }
 
 input UpdateUserInput {
@@ -266,6 +360,9 @@ input UpdateUserInput {
 
   """password of the user"""
   password: String
+
+  """mobile of the Admin"""
+  mobileNumber: String
   _id: String!
 }
 
@@ -314,21 +411,46 @@ input CreateBuyerInput {
   """Buyer typeCompte """
   typeCompte: String
 
-  """Buyer codePostal """
+  """Buyer adresse """
+  adresse: String!
+
+  """Buyer company adresse """
+  companyAdresse: String!
+
+  """Buyer code postal """
   codePostal: String!
+
+  """Buyer company code postal """
+  companyCodePostal: String!
 
   """Buyer ville """
   ville: String!
 
+  """Buyer company ville """
+  companyVille: String!
+
   """Buyer pays """
   pays: String!
+
+  """Buyer company pays """
+  companyPays: String!
 
   """Buyer website """
   website: String
 
+  """Seller departement """
+  departement: String!
+
+  """Seller civilite """
+  civilite: String!
+
+  """Seller TVA intra """
+  tvaIntra: String!
+
   """User hashed password"""
   password: String!
-  pseudo: String!
+  statut: String!
+  isArchived: Boolean!
 }
 
 input UpdateBuyerInput {
@@ -368,21 +490,46 @@ input UpdateBuyerInput {
   """Buyer typeCompte """
   typeCompte: String
 
-  """Buyer codePostal """
+  """Buyer adresse """
+  adresse: String
+
+  """Buyer company adresse """
+  companyAdresse: String
+
+  """Buyer code postal """
   codePostal: String
+
+  """Buyer company code postal """
+  companyCodePostal: String
 
   """Buyer ville """
   ville: String
 
+  """Buyer company ville """
+  companyVille: String
+
   """Buyer pays """
   pays: String
+
+  """Buyer company pays """
+  companyPays: String
 
   """Buyer website """
   website: String
 
+  """Seller departement """
+  departement: String
+
+  """Seller civilite """
+  civilite: String
+
+  """Seller TVA intra """
+  tvaIntra: String
+
   """User hashed password"""
   password: String
-  pseudo: String
+  statut: String
+  isArchived: Boolean
 }
 
 input LoginBuyerInput {
@@ -460,14 +607,23 @@ input CreateSellerInput {
   """Seller codePostal """
   codePostal: String!
 
+  """Seller company codePostal """
+  companyCodePostal: String!
+
   """Seller ville """
   ville: String!
+
+  """Seller company ville """
+  companyVille: String!
 
   """Seller departement """
   departement: String!
 
   """Seller pays """
   pays: String!
+
+  """Seller company pays """
+  companyPays: String!
 
   """Seller IBAN """
   IBAN: String
@@ -552,14 +708,23 @@ input UpdateSellerInput {
   """Seller codePostal """
   codePostal: String
 
+  """Seller company codePostal """
+  companyCodePostal: String
+
   """Seller ville """
   ville: String
+
+  """Seller company ville """
+  companyVille: String
 
   """Seller departement """
   departement: String
 
   """Seller pays """
   pays: String
+
+  """Seller company pays """
+  companyPays: String
 
   """Seller IBAN """
   IBAN: String

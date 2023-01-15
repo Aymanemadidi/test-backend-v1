@@ -16,4 +16,6 @@ export class CreateUserInput {
   role: Role;
   @Field(() => String, { description: 'password of the user' })
   password: string;
+  @Field(() => String, { description: 'mobile of the Admin', nullable: true })
+  mobileNumber: string;
 }

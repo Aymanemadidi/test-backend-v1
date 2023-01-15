@@ -29,7 +29,74 @@ export class SellerService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
-  async create(createSellerInput: CreateSellerInput): Promise<Seller> {
+  async create(
+    createSellerInput: CreateSellerInput,
+    ctx: any,
+  ): Promise<Seller> {
+    const user = await this.userModel
+      .findOne({ email: createSellerInput.email })
+      .exec();
+    if (user) {
+      throw new BadRequestException('This Email already exists');
+    }
+    const saltOrRounds = 10;
+    const hash = await bcrypt.hash(createSellerInput.password, saltOrRounds);
+    createSellerInput.password = hash;
+    const sellerUser = new this.userModel(createSellerInput);
+    sellerUser.save();
+    // const d = new Date();
+    // const currentDate = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+    createSellerInput.created_at = new Date();
+    createSellerInput.last_connected = new Date();
+    createSellerInput.isConnected = true;
+    createSellerInput.isPro = false;
+    createSellerInput.statut_moderation = false;
+    createSellerInput.statut = StatutSeller.NEW;
+    createSellerInput.userId = sellerUser._id;
+    const pseudo = `${createSellerInput.nomEntreprise.slice(
+      0,
+      3,
+    )}${createSellerInput.ville.slice(
+      0,
+      2,
+    )}${createSellerInput.codePostal.slice(0, 2)}${createSellerInput.pays.slice(
+      0,
+      2,
+    )}`;
+    createSellerInput.pseudo = pseudo.toUpperCase();
+    console.log('pseudo: ', createSellerInput.pseudo);
+    const finalUser = new this.sellerModel(createSellerInput);
+    finalUser.save();
+    const tokens = await this.authService.generateUserCredentials(sellerUser);
+    const serialisedA = serialize('access_token', tokens.access_token, {
+      httpOnly: true, //maybe disabling this to be able to send it in authorization header
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60,
+      path: '/',
+    });
+    const serialisedR = serialize('refresh_token', tokens.refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      maxAge: 7 * 24 * 60 * 60,
+      path: '/',
+    });
+    console.log(process.env.FRONTEND_URI);
+    ctx.res.setHeader('Set-Cookie', [serialisedA, serialisedR]);
+    ctx.res.setHeader(
+      'Access-Control-Allow-Origin',
+      `${
+        process.env.NODE_ENV === 'production'
+          ? process.env.FRONTEND_URI
+          : 'http://localhost:5000'
+      }`,
+    );
+    await this.usersService.updateRtHash(sellerUser.id, tokens.refresh_token);
+    return finalUser;
+  }
+
+  async createByAdm(createSellerInput: CreateSellerInput): Promise<Seller> {
     const user = await this.userModel
       .findOne({ email: createSellerInput.email })
       .exec();
@@ -201,7 +268,14 @@ export class SellerService {
         path: '/',
       });
       ctx.res.setHeader('Set-Cookie', [serialisedA, serialisedR]);
-      ctx.res.setHeader('Access-Control-Allow-Credentials', 'true');
+      ctx.res.setHeader(
+        'Access-Control-Allow-Origin',
+        `${
+          process.env.NODE_ENV === 'production'
+            ? process.env.FRONTEND_URI
+            : 'http://localhost:5000'
+        }`,
+      );
       await this.usersService.updateRtHash(user.id, tokens.refresh_token);
       return tokens;
     }

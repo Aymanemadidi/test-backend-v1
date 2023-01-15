@@ -20,8 +20,9 @@ export class SellerResolver {
   @Mutation(() => Seller)
   createSeller(
     @Args('createSellerInput') createSellerInput: CreateSellerInput,
+    @Context() ctx: any,
   ) {
-    return this.sellerService.create(createSellerInput);
+    return this.sellerService.create(createSellerInput, ctx);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -30,7 +31,7 @@ export class SellerResolver {
   createSellerByAdm(
     @Args('createSellerInput') createSellerInput: CreateSellerInput,
   ) {
-    return this.sellerService.create(createSellerInput);
+    return this.sellerService.createByAdm(createSellerInput);
   }
 
   @UseGuards(JwtRtAuthGuard)
@@ -77,7 +78,7 @@ export class SellerResolver {
     return this.sellerService.remove(id);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Mutation(() => LoggedSellerOutput)
   loginSeller(
     @Args('loginSellerInput') loginSellerInput: LoginSellerInput,

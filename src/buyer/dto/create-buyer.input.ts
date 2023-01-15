@@ -68,4 +68,6 @@ export class CreateBuyerInput {
   pseudo: string;
   @Field(() => String)
   statut: StatutBuyer;
+  @Field(() => Boolean)
+  isArchived: boolean;
 }
