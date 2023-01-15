@@ -25,6 +25,9 @@ type User {
 
   """User created_at"""
   created_at: DateTime
+
+  """User isArchived """
+  isArchived: String!
 }
 
 """
@@ -268,6 +271,9 @@ type AllUsersOutput {
 
   """User created_at"""
   created_at: DateTime
+
+  """User isArchived """
+  isArchived: String
   seller: Seller
   buyer: Buyer
 }
@@ -306,7 +312,7 @@ type Mutation {
   createUser(createUserInput: CreateUserInput!): LoggedUserOutput!
   createAdminBySupAdm(createUserInput: CreateUserInput!): User!
   archiveUser(_id: String!): Boolean!
-  updateUser(updateUserInput: UpdateUserInput!): User!
+  updateUser(_id: String!, updateUserInput: UpdateUserInput!): User!
   removeUser(_id: String!): Boolean!
   loginUser(loginUserInput: LoginUserInput!): LoggedUserOutput!
   logoutUser: Boolean!
@@ -343,6 +349,12 @@ input CreateUserInput {
 
   """mobile of the Admin"""
   mobileNumber: String
+
+  """statut of the Admin"""
+  statut: String
+
+  """isArchived of the Admin"""
+  isArchived: Boolean
 }
 
 input UpdateUserInput {
@@ -363,7 +375,12 @@ input UpdateUserInput {
 
   """mobile of the Admin"""
   mobileNumber: String
-  _id: String!
+
+  """statut of the Admin"""
+  statut: String
+
+  """isArchived of the Admin"""
+  isArchived: Boolean
 }
 
 input LoginUserInput {

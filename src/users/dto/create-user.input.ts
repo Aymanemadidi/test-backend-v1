@@ -18,4 +18,11 @@ export class CreateUserInput {
   password: string;
   @Field(() => String, { description: 'mobile of the Admin', nullable: true })
   mobileNumber: string;
+  @Field(() => String, { description: 'statut of the Admin', nullable: true })
+  statut: string;
+  @Field(() => Boolean, {
+    description: 'isArchived of the Admin',
+    nullable: true,
+  })
+  isArchived: boolean;
 }

@@ -114,7 +114,17 @@ export class UsersService {
 
     // --------------- Search Logic Start ----------------- //
 
-    if (type === 'admin') {
+    if (type === 'admin' && statut !== '') {
+      return this.userModel.find({
+        email: { $regex: regex },
+        nomEntreprise: { $regex: regexn },
+        pseudo: { $regex: regexp },
+        created_at: { $gte: sd, $lt: ed },
+        statut,
+        // statut: { $regex: regexs },
+        role: 'Admin',
+      });
+    } else if (type === 'admin' && statut === '') {
       return this.userModel.find({
         email: { $regex: regex },
         nomEntreprise: { $regex: regexn },
@@ -417,7 +427,7 @@ export class UsersService {
         'Access-Control-Allow-Origin',
         `${
           process.env.NODE_ENV === 'production'
-            ? 'https://frontend-test-v1.vercel.app'
+            ? this.config.get('FRONTEND_URI')
             : 'http://localhost:5000'
         }`,
       );
@@ -506,7 +516,7 @@ export class UsersService {
       'Access-Control-Allow-Origin',
       `${
         process.env.NODE_ENV === 'production'
-          ? 'https://frontend-test-v1.vercel.app'
+          ? this.config.get('FRONTEND_URI')
           : 'http://localhost:5000'
       }`,
     );

@@ -84,13 +84,13 @@ export class SellerService {
       maxAge: 7 * 24 * 60 * 60,
       path: '/',
     });
-    console.log('https://frontend-test-v1.vercel.app');
+    console.log(this.config.get('FRONTEND_URI'));
     ctx.res.setHeader('Set-Cookie', [serialisedA, serialisedR]);
     ctx.res.setHeader(
       'Access-Control-Allow-Origin',
       `${
         process.env.NODE_ENV === 'production'
-          ? 'https://frontend-test-v1.vercel.app'
+          ? this.config.get('FRONTEND_URI')
           : 'http://localhost:5000'
       }`,
     );
@@ -274,7 +274,7 @@ export class SellerService {
         'Access-Control-Allow-Origin',
         `${
           process.env.NODE_ENV === 'production'
-            ? 'https://frontend-test-v1.vercel.app'
+            ? this.config.get('FRONTEND_URI')
             : 'http://localhost:5000'
         }`,
       );

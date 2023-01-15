@@ -97,10 +97,11 @@ export class UsersResolver {
   // @UseInterceptors(OnlySameUserByIdAllowed)
   @Mutation(() => User)
   updateUser(
+    @Args('_id') id: string,
     @Args('updateUserInput')
     updateUserInput: UpdateUserInput,
   ) {
-    return this.usersService.update(updateUserInput._id, updateUserInput);
+    return this.usersService.update(id, updateUserInput);
   }
 
   @Mutation(() => Boolean)

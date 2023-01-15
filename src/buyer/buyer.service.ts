@@ -85,7 +85,7 @@ export class BuyerService {
       'Access-Control-Allow-Origin',
       `${
         process.env.NODE_ENV === 'production'
-          ? 'https://frontend-test-v1.vercel.app'
+          ? this.config.get('FRONTEND_URI')
           : 'http://localhost:5000'
       }`,
     );
@@ -250,7 +250,7 @@ export class BuyerService {
         'Access-Control-Allow-Origin',
         `${
           process.env.NODE_ENV === 'production'
-            ? 'https://frontend-test-v1.vercel.app'
+            ? this.config.get('FRONTEND_URI')
             : 'http://localhost:5000'
         }`,
       );
