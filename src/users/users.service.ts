@@ -1,10 +1,8 @@
 import {
   BadRequestException,
   ForbiddenException,
-  Inject,
   Injectable,
   NotFoundException,
-  forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserInput } from './dto/create-user.input';
@@ -18,8 +16,6 @@ import * as bcrypt from 'bcrypt';
 // import { UpdateSellerInput } from 'src/seller/dto/update-seller.input';
 import * as argon from 'argon2';
 import { Tokens } from '../common/auth/types';
-import { BuyerService } from '../buyer/buyer.service';
-import { SellerService } from '../seller/seller.service';
 import { Buyer } from '../buyer/entities/buyer.entity';
 import { Seller } from '../seller/entities/seller.entity';
 import { serialize } from 'cookie';
