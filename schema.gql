@@ -27,7 +27,7 @@ type User {
   created_at: DateTime
 
   """User isArchived """
-  isArchived: String!
+  isArchived: Boolean
 }
 
 """
@@ -235,6 +235,9 @@ type Seller {
   """Seller Pseudo """
   pseudo: String
 
+  """Seller isPro """
+  isPro: Boolean
+
   """Statut moderation seller"""
   statut_moderation: Boolean
   statut: String
@@ -273,7 +276,7 @@ type AllUsersOutput {
   created_at: DateTime
 
   """User isArchived """
-  isArchived: String
+  isArchived: Boolean
   seller: Seller
   buyer: Buyer
 }
@@ -296,7 +299,9 @@ type LoggedSellerOutput {
 
 type Query {
   users: [User!]!
+  admins: [User!]!
   users2: [AllUsersOutput!]!
+  adminsOcc(email: String!, startDate: String!, endDate: String!, statut: String!): [AllUsersOutput!]!
   usersOcc(email: String!, nomEntreprise: String!, pseudo: String!, startDate: String!, endDate: String!, statut: String!, type: String!): [AllUsersOutput!]!
   user(_id: String!): [User!]!
   getMe: User!
@@ -304,7 +309,8 @@ type Query {
   buyersOcc(email: String!, nomEntreprise: String!, pseudo: String!, startDate: String!, endDate: String!): [Buyer!]!
   buyer(_id: String!): Buyer!
   sellers: [Seller!]!
-  sellersOcc(email: String!, nomEntreprise: String!, pseudo: String!, startDate: String!, endDate: String!): [Seller!]!
+  sellersPro: [Seller!]!
+  sellersOcc(email: String!, nomEntreprise: String!, pseudo: String!, startDate: String!, endDate: String!, isPro: Boolean): [Seller!]!
   seller(_id: String!): Seller!
 }
 
@@ -653,6 +659,7 @@ input CreateSellerInput {
 
   """User hashed password"""
   password: String!
+  isPro: Boolean
   statut_moderation: Boolean!
   statut: String!
   isArchived: Boolean!
@@ -754,6 +761,7 @@ input UpdateSellerInput {
 
   """User hashed password"""
   password: String
+  isPro: Boolean
   statut_moderation: Boolean
   statut: String
   isArchived: Boolean

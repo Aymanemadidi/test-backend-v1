@@ -137,6 +137,7 @@ export class Seller {
   @Field(() => String, { description: 'Seller Pseudo ', nullable: true })
   pseudo: string;
   @Prop()
+  @Field(() => Boolean, { description: 'Seller isPro ', nullable: true })
   isPro: boolean;
   @Prop()
   @Field(() => Boolean, {

@@ -81,7 +81,7 @@ export class CreateSellerInput {
   isConnected: boolean;
   // @Field(() => String)
   pseudo: string;
-  // @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: true })
   isPro: boolean;
   @Field(() => Boolean)
   statut_moderation: boolean;

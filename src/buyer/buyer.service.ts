@@ -161,11 +161,12 @@ export class BuyerService {
       nomEntreprise: { $regex: regexn },
       pseudo: { $regex: regexp },
       created_at: { $gte: sd, $lt: ed },
+      isArchived: false,
     });
   }
 
   findAll() {
-    return this.buyerModel.find().exec();
+    return this.buyerModel.find({ isArchived: false }).exec();
   }
 
   async findBuyerByEmail(email: string): Promise<Buyer> {

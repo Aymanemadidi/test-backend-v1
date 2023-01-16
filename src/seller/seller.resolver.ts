@@ -41,6 +41,13 @@ export class SellerResolver {
     return this.sellerService.findAll();
   }
 
+  @UseGuards(JwtRtAuthGuard)
+  @Roles([Role.ADMIN, Role.SUPADMIN])
+  @Query(() => [Seller], { name: 'sellersPro' })
+  findAllPro() {
+    return this.sellerService.findAllPro();
+  }
+
   @UseGuards(JwtAuthGuard)
   @Roles([Role.ADMIN, Role.SUPADMIN])
   @Query(() => [Seller], { name: 'sellersOcc' })
@@ -50,6 +57,7 @@ export class SellerResolver {
     @Args('pseudo', { type: () => String }) pseudo: string,
     @Args('startDate', { type: () => String }) startDate: string,
     @Args('endDate', { type: () => String }) endDate: string,
+    @Args('isPro', { type: () => Boolean, nullable: true }) isPro: boolean,
   ) {
     return this.sellerService.findAllWithOccurence(
       email,
@@ -57,6 +65,7 @@ export class SellerResolver {
       pseudo,
       startDate,
       endDate,
+      isPro,
     );
   }
 

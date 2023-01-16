@@ -34,7 +34,7 @@ export class User {
   @Prop()
   hashed_rt: string | null;
   @Prop()
-  @Field(() => String, { description: 'User isArchived ' })
+  @Field(() => Boolean, { description: 'User isArchived ', nullable: true })
   isArchived: boolean;
 }
 

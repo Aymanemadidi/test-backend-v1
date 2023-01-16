@@ -60,9 +60,33 @@ export class UsersResolver {
 
   @UseGuards(JwtAuthGuard)
   @Roles([Role.ADMIN, Role.SUPADMIN])
+  @Query(() => [User], { name: 'admins' })
+  findAllAdmins() {
+    return this.usersService.findAllAdmins();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles([Role.ADMIN, Role.SUPADMIN])
   @Query(() => [AllUsersOutput], { name: 'users2' })
   findAll2() {
     return this.usersService.findAll2();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles([Role.ADMIN, Role.SUPADMIN])
+  @Query(() => [AllUsersOutput], { name: 'adminsOcc' })
+  findAdminsWithOccurence(
+    @Args('email', { type: () => String }) email: string,
+    @Args('startDate', { type: () => String }) startDate: string,
+    @Args('endDate', { type: () => String }) endDate: string,
+    @Args('statut', { type: () => String }) statut: string,
+  ) {
+    return this.usersService.findAdminsWithOccurence(
+      email,
+      startDate,
+      endDate,
+      statut,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

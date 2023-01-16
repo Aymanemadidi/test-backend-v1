@@ -1,8 +1,11 @@
 import {
   BadRequestException,
   ForbiddenException,
+  Inject,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserInput } from './dto/create-user.input';
@@ -16,6 +19,8 @@ import * as bcrypt from 'bcrypt';
 // import { UpdateSellerInput } from 'src/seller/dto/update-seller.input';
 import * as argon from 'argon2';
 import { Tokens } from '../common/auth/types';
+import { BuyerService } from '../buyer/buyer.service';
+import { SellerService } from '../seller/seller.service';
 import { Buyer } from '../buyer/entities/buyer.entity';
 import { Seller } from '../seller/entities/seller.entity';
 import { serialize } from 'cookie';
@@ -58,6 +63,18 @@ export class UsersService {
 
   findAll() {
     return this.userModel.find().exec();
+  }
+
+  async findAllAdmins() {
+    try {
+      const admins = await this.userModel.find({ role: 'Admin' });
+      if (!admins) {
+        throw new NotFoundException();
+      }
+      return admins;
+    } catch (error) {
+      throw new InternalServerErrorException();
+    }
   }
 
   async findByEmail(email: string): Promise<User> {
@@ -111,6 +128,7 @@ export class UsersService {
     // --------------- Search Logic Start ----------------- //
 
     if (type === 'admin' && statut !== '') {
+      console.log("type === 'admin' && statut !== '");
       return this.userModel.find({
         email: { $regex: regex },
         nomEntreprise: { $regex: regexn },
@@ -121,6 +139,7 @@ export class UsersService {
         role: 'Admin',
       });
     } else if (type === 'admin' && statut === '') {
+      console.log("type === 'admin' && statut === ''");
       return this.userModel.find({
         email: { $regex: regex },
         nomEntreprise: { $regex: regexn },
@@ -130,6 +149,7 @@ export class UsersService {
         role: 'Admin',
       });
     } else if (type === 'seller') {
+      console.log("type === 'seller'");
       const sellers = await this.userModel.aggregate([
         {
           $lookup: {
@@ -159,6 +179,7 @@ export class UsersService {
       ]);
       return sellers;
     } else if (type === 'buyer') {
+      console.log("type === 'buyer'");
       const buyers = await this.userModel.aggregate([
         {
           $lookup: {
@@ -189,7 +210,13 @@ export class UsersService {
       return buyers;
     }
 
-    if (statut !== '' && pseudo === '' && nomEntreprise === '') {
+    if (
+      statut !== '' &&
+      pseudo === '' &&
+      nomEntreprise === '' &&
+      email === '' &&
+      type === ''
+    ) {
       console.log('statut check');
       const admins = await this.userModel.find({
         role: 'Admin',
@@ -305,7 +332,113 @@ export class UsersService {
       // console.log(buyers);
       return [...sellers, ...buyers];
     }
-    return this.findAll2();
+
+    console.log('no check');
+
+    const admins = await this.userModel.find({
+      role: 'Admin',
+      statut:
+        statut === 'inactif'
+          ? 'inactif'
+          : statut === 'actif'
+          ? 'actif'
+          : regexs,
+      email: regex,
+      nomEntreprise: regexn,
+      pseudo: regexp,
+    });
+    const sellers = await this.userModel.aggregate([
+      {
+        $lookup: {
+          from: 'sellers',
+          localField: '_id',
+          foreignField: 'userId',
+          pipeline: [
+            {
+              $match: {
+                statut:
+                  statut === 'inactif'
+                    ? 'inactif'
+                    : statut === 'actif'
+                    ? 'actif'
+                    : regexs,
+                email: regex,
+                nomEntreprise: regexn,
+                pseudo: regexp,
+              },
+            },
+          ],
+          as: 'seller',
+        },
+      },
+      { $unwind: '$seller' },
+    ]);
+    // console.log(sellers);
+    const buyers = await this.userModel.aggregate([
+      {
+        $lookup: {
+          from: 'buyers',
+          localField: '_id',
+          foreignField: 'userId',
+          pipeline: [
+            {
+              $match: {
+                statut:
+                  statut === 'inactif'
+                    ? 'inactif'
+                    : statut === 'actif'
+                    ? 'actif'
+                    : regexs,
+                email: regex,
+                nomEntreprise: regexn,
+                pseudo: regexp,
+              },
+            },
+          ],
+          as: 'buyer',
+        },
+      },
+      { $unwind: '$buyer' },
+    ]);
+    return [...admins, ...sellers, ...buyers];
+    // return this.findAll2();
+  }
+
+  findAdminsWithOccurence(
+    email: string,
+    startDate: string,
+    endDate: string,
+    statut: string,
+  ) {
+    console.log('startDate: ', startDate);
+    console.log('endDate: ', endDate);
+    let sd = new Date(0);
+    let ed = new Date();
+    const e = email;
+    const s = statut;
+    if (startDate !== '') {
+      sd = new Date(startDate);
+    }
+    if (endDate !== '') {
+      ed = new Date(endDate);
+    }
+    const regex = new RegExp(e, 'i'); // i for case insensitive
+    const regexs = new RegExp(s, 'i'); // i for case insensitive
+
+    if (statut === '') {
+      return this.userModel.find({
+        email: { $regex: regex },
+        created_at: { $gte: sd, $lt: ed },
+        statut: { $regex: regexs },
+        // isArchived: false,
+      });
+    }
+    return this.userModel.find({
+      email: { $regex: regex },
+      created_at: { $gte: sd, $lt: ed },
+      statut,
+      // isArchived: false,
+    });
   }
 
   async findAll2() {

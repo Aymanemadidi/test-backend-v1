@@ -51,7 +51,7 @@ export class SellerService {
     createSellerInput.created_at = new Date();
     createSellerInput.last_connected = new Date();
     createSellerInput.isConnected = true;
-    createSellerInput.isPro = false;
+    // createSellerInput.isPro = false;
     createSellerInput.statut_moderation = false;
     createSellerInput.statut = StatutSeller.NEW;
     createSellerInput.userId = sellerUser._id;
@@ -115,7 +115,7 @@ export class SellerService {
     createSellerInput.created_at = new Date();
     createSellerInput.last_connected = new Date();
     createSellerInput.isConnected = true;
-    createSellerInput.isPro = false;
+    // createSellerInput.isPro = false;
     createSellerInput.statut_moderation = false;
     createSellerInput.statut = StatutSeller.NEW;
     createSellerInput.userId = sellerUser._id;
@@ -144,6 +144,7 @@ export class SellerService {
     pseudo: string,
     startDate: string,
     endDate: string,
+    isPro: boolean,
   ) {
     console.log('startDate: ', startDate);
     console.log('endDate: ', endDate);
@@ -162,16 +163,32 @@ export class SellerService {
     const regexn = new RegExp(n, 'i'); // i for case insensitive
     const regexp = new RegExp(p, 'i'); // i for case insensitive
 
+    if (isPro) {
+      return this.sellerModel.find({
+        email: { $regex: regex },
+        nomEntreprise: { $regex: regexn },
+        pseudo: { $regex: regexp },
+        created_at: { $gte: sd, $lt: ed },
+        isArchived: false,
+        isPro: true,
+      });
+    }
     return this.sellerModel.find({
       email: { $regex: regex },
       nomEntreprise: { $regex: regexn },
       pseudo: { $regex: regexp },
       created_at: { $gte: sd, $lt: ed },
+      isArchived: false,
+      // isPro: false,
     });
   }
 
   findAll() {
-    return this.sellerModel.find().exec();
+    return this.sellerModel.find({ isArchived: false }).exec();
+  }
+
+  findAllPro() {
+    return this.sellerModel.find({ isPro: true, isArchived: false }).exec();
   }
 
   async findSellerByEmail(email: string): Promise<Seller> {
