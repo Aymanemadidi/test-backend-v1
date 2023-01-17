@@ -297,6 +297,50 @@ type LoggedSellerOutput {
   refresh_token: String!
 }
 
+type Marque {
+  _id: String!
+
+  """Libelle Marque"""
+  libelle: String!
+
+  """Marque created_at """
+  created_at: DateTime
+  statut: String
+}
+
+type TypeUser {
+  _id: String!
+
+  """Libelle type utilisateur"""
+  libelle: String!
+
+  """utilisé pour vendeur"""
+  for_seller: Boolean!
+
+  """utilisé pour acheteur"""
+  for_buyer: Boolean!
+
+  """Description type utilisateur"""
+  description: String!
+
+  """TypeUser created_at """
+  created_at: DateTime
+}
+
+type ModesPaiement {
+  _id: String!
+
+  """Mode de paiement"""
+  mode_paiement: String!
+
+  """Description Mode de paiement"""
+  description: String!
+
+  """ModesPaiement created_at """
+  created_at: DateTime
+  statut: String
+}
+
 type Query {
   users: [User!]!
   admins: [User!]!
@@ -312,6 +356,12 @@ type Query {
   sellersPro: [Seller!]!
   sellersOcc(email: String!, nomEntreprise: String!, pseudo: String!, startDate: String!, endDate: String!, isPro: Boolean): [Seller!]!
   seller(_id: String!): Seller!
+  marques: [Marque!]!
+  marque(_id: String!): Marque!
+  typeUsers: [TypeUser!]!
+  typeUser(_id: String!): TypeUser!
+  modesPaiement: [ModesPaiement!]!
+  modePaiement(_id: String!): ModesPaiement!
 }
 
 type Mutation {
@@ -335,6 +385,15 @@ type Mutation {
   removeSeller(_id: String!): Boolean!
   loginSeller(loginSellerInput: LoginSellerInput!): LoggedSellerOutput!
   logoutSeller: Boolean!
+  createMarque(createMarqueInput: CreateMarqueInput!): Marque!
+  updateMarque(updateMarqueInput: UpdateMarqueInput!): Marque!
+  removeMarque(_id: String!): Marque!
+  createTypeUser(createTypeUserInput: CreateTypeUserInput!): TypeUser!
+  updateTypeUser(updateTypeUserInput: UpdateTypeUserInput!): TypeUser!
+  removeTypeUser(_id: String!): TypeUser!
+  createModesPaiement(createModesPaiementInput: CreateModesPaiementInput!): ModesPaiement!
+  updateModesPaiement(updateModesPaiementInput: UpdateModesPaiementInput!): ModesPaiement!
+  removeModesPaiement(_id: String!): ModesPaiement!
 }
 
 input CreateUserInput {
@@ -773,4 +832,63 @@ input LoginSellerInput {
 
   """password of the user"""
   password: String!
+}
+
+input CreateMarqueInput {
+  """Libelle marque"""
+  libelle: String!
+}
+
+input UpdateMarqueInput {
+  """Libelle marque"""
+  libelle: String
+  _id: String!
+  statut: String!
+}
+
+input CreateTypeUserInput {
+  """Libelle type utilisateur"""
+  libelle: String!
+
+  """utilisé pour vendeur?"""
+  for_seller: Boolean!
+
+  """utilisé pour acheteur?"""
+  for_buyer: Boolean!
+
+  """Description type utilisateur"""
+  description: String!
+}
+
+input UpdateTypeUserInput {
+  """Libelle type utilisateur"""
+  libelle: String
+
+  """utilisé pour vendeur?"""
+  for_seller: Boolean
+
+  """utilisé pour acheteur?"""
+  for_buyer: Boolean
+
+  """Description type utilisateur"""
+  description: String
+  _id: String!
+}
+
+input CreateModesPaiementInput {
+  """Mode de paiement"""
+  mode_paiement: String!
+
+  """Description Mode de paiement"""
+  description: String!
+}
+
+input UpdateModesPaiementInput {
+  """Mode de paiement"""
+  mode_paiement: String
+
+  """Description Mode de paiement"""
+  description: String
+  _id: String!
+  statut: String!
 }

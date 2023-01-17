@@ -239,6 +239,7 @@ export class UsersService {
                       : regexs,
                 },
               },
+              { $match: { created_at: { $gte: sd, $lt: ed } } },
             ],
             as: 'seller',
           },
@@ -263,6 +264,7 @@ export class UsersService {
                       : regexs,
                 },
               },
+              { $match: { created_at: { $gte: sd, $lt: ed } } },
             ],
             as: 'buyer',
           },
@@ -346,6 +348,7 @@ export class UsersService {
       email: regex,
       nomEntreprise: regexn,
       pseudo: regexp,
+      created_at: { $gte: sd, $lt: ed },
     });
     const sellers = await this.userModel.aggregate([
       {
@@ -367,6 +370,7 @@ export class UsersService {
                 pseudo: regexp,
               },
             },
+            { $match: { created_at: { $gte: sd, $lt: ed } } },
           ],
           as: 'seller',
         },
@@ -394,6 +398,7 @@ export class UsersService {
                 pseudo: regexp,
               },
             },
+            { $match: { created_at: { $gte: sd, $lt: ed } } },
           ],
           as: 'buyer',
         },
