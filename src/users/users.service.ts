@@ -171,6 +171,15 @@ export class UsersService {
                 },
               },
               { $match: { created_at: { $gte: sd, $lt: ed } } },
+              {
+                $lookup: {
+                  from: 'typeusers',
+                  localField: 'typeCompte',
+                  foreignField: '_id',
+                  as: 'type',
+                },
+              },
+              { $unwind: '$type' },
             ],
             as: 'seller',
           },
@@ -201,6 +210,15 @@ export class UsersService {
                 },
               },
               { $match: { created_at: { $gte: sd, $lt: ed } } },
+              {
+                $lookup: {
+                  from: 'typeusers',
+                  localField: 'typeCompte',
+                  foreignField: '_id',
+                  as: 'type',
+                },
+              },
+              { $unwind: '$type' },
             ],
             as: 'buyer',
           },
@@ -208,6 +226,46 @@ export class UsersService {
         { $unwind: '$buyer' },
       ]);
       return buyers;
+    } else if (type === 'sellerPro') {
+      console.log("type === 'sellerPro'");
+      const sellers = await this.userModel.aggregate([
+        {
+          $lookup: {
+            from: 'sellers',
+            localField: '_id',
+            foreignField: 'userId',
+            pipeline: [
+              { $match: { isPro: true } },
+              { $match: { email: regex } },
+              { $match: { pseudo: regexp } },
+              { $match: { nomEntreprise: regexn } },
+              {
+                $match: {
+                  statut:
+                    statut === 'inactif'
+                      ? 'inactif'
+                      : statut === 'actif'
+                      ? 'actif'
+                      : regexs,
+                },
+              },
+              { $match: { created_at: { $gte: sd, $lt: ed } } },
+              {
+                $lookup: {
+                  from: 'typeusers',
+                  localField: 'typeCompte',
+                  foreignField: '_id',
+                  as: 'type',
+                },
+              },
+              { $unwind: '$type' },
+            ],
+            as: 'seller',
+          },
+        },
+        { $unwind: '$seller' },
+      ]);
+      return sellers;
     }
 
     if (
@@ -240,6 +298,15 @@ export class UsersService {
                 },
               },
               { $match: { created_at: { $gte: sd, $lt: ed } } },
+              {
+                $lookup: {
+                  from: 'typeusers',
+                  localField: 'typeCompte',
+                  foreignField: '_id',
+                  as: 'type',
+                },
+              },
+              { $unwind: '$type' },
             ],
             as: 'seller',
           },
@@ -265,6 +332,15 @@ export class UsersService {
                 },
               },
               { $match: { created_at: { $gte: sd, $lt: ed } } },
+              {
+                $lookup: {
+                  from: 'typeusers',
+                  localField: 'typeCompte',
+                  foreignField: '_id',
+                  as: 'type',
+                },
+              },
+              { $unwind: '$type' },
             ],
             as: 'buyer',
           },
@@ -297,6 +373,15 @@ export class UsersService {
                 },
               },
               { $match: { created_at: { $gte: sd, $lt: ed } } },
+              {
+                $lookup: {
+                  from: 'typeusers',
+                  localField: 'typeCompte',
+                  foreignField: '_id',
+                  as: 'type',
+                },
+              },
+              { $unwind: '$type' },
             ],
             as: 'seller',
           },
@@ -325,6 +410,15 @@ export class UsersService {
                 },
               },
               { $match: { created_at: { $gte: sd, $lt: ed } } },
+              {
+                $lookup: {
+                  from: 'typeusers',
+                  localField: 'typeCompte',
+                  foreignField: '_id',
+                  as: 'type',
+                },
+              },
+              { $unwind: '$type' },
             ],
             as: 'buyer',
           },
@@ -370,6 +464,15 @@ export class UsersService {
                 pseudo: regexp,
               },
             },
+            {
+              $lookup: {
+                from: 'typeusers',
+                localField: 'typeCompte',
+                foreignField: '_id',
+                as: 'type',
+              },
+            },
+            { $unwind: '$type' },
             { $match: { created_at: { $gte: sd, $lt: ed } } },
           ],
           as: 'seller',
@@ -399,6 +502,15 @@ export class UsersService {
               },
             },
             { $match: { created_at: { $gte: sd, $lt: ed } } },
+            {
+              $lookup: {
+                from: 'typeusers',
+                localField: 'typeCompte',
+                foreignField: '_id',
+                as: 'type',
+              },
+            },
+            { $unwind: '$type' },
           ],
           as: 'buyer',
         },
@@ -457,6 +569,17 @@ export class UsersService {
           localField: '_id',
           foreignField: 'userId',
           as: 'seller',
+          pipeline: [
+            {
+              $lookup: {
+                from: 'typeusers',
+                localField: 'typeCompte',
+                foreignField: '_id',
+                as: 'type',
+              },
+            },
+            { $unwind: '$type' },
+          ],
         },
       },
       { $unwind: '$seller' },
@@ -468,6 +591,17 @@ export class UsersService {
           localField: '_id',
           foreignField: 'userId',
           as: 'buyer',
+          pipeline: [
+            {
+              $lookup: {
+                from: 'typeusers',
+                localField: 'typeCompte',
+                foreignField: '_id',
+                as: 'type',
+              },
+            },
+            { $unwind: '$type' },
+          ],
         },
       },
       { $unwind: '$buyer' },

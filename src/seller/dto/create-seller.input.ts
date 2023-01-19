@@ -33,7 +33,7 @@ export class CreateSellerInput {
   @Field(() => String, { description: 'Seller groupe ', nullable: true })
   groupe: string;
   @Field(() => String, { description: 'Seller typeCompte ', nullable: true })
-  typeCompte: TypeCompte;
+  typeCompte: MongooseSchema.Types.ObjectId;
   @Field(() => String, { description: 'Seller statutLegal ', nullable: true })
   statutLegal: string;
   @Field(() => String, { description: 'Seller codeNAF ', nullable: true })
@@ -89,4 +89,21 @@ export class CreateSellerInput {
   statut: StatutSeller;
   @Field(() => Boolean)
   isArchived: boolean;
+  //refund
+  @Field(() => String, {
+    description: 'Seller refund adresse ',
+  })
+  refundAdresse: string;
+  @Field(() => String, {
+    description: 'Seller refund adresse ',
+  })
+  refundPays: string;
+  @Field(() => String, {
+    description: 'Seller refund pays ',
+  })
+  refundCodePostal: string;
+  @Field(() => String, {
+    description: 'Seller refund Code postal ',
+  })
+  refundVille: string;
 }

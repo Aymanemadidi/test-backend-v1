@@ -10,7 +10,7 @@ import { UpdateSellerInput } from './dto/update-seller.input';
 import { LoginSellerInput } from './dto/login-seller.input';
 import { Seller, StatutSeller } from './entities/seller.entity';
 import { AuthService } from '../common/auth/services/auth.service';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -110,8 +110,6 @@ export class SellerService {
     createSellerInput.password = hash;
     const sellerUser = new this.userModel(createSellerInput);
     sellerUser.save();
-    // const d = new Date();
-    // const currentDate = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
     createSellerInput.created_at = new Date();
     createSellerInput.last_connected = new Date();
     createSellerInput.isConnected = true;
@@ -119,6 +117,8 @@ export class SellerService {
     createSellerInput.statut_moderation = false;
     createSellerInput.statut = StatutSeller.NEW;
     createSellerInput.userId = sellerUser._id;
+    const typeId = createSellerInput.typeCompte;
+    createSellerInput.typeCompte = typeId;
     const pseudo = `${createSellerInput.nomEntreprise.slice(
       0,
       3,
@@ -164,31 +164,121 @@ export class SellerService {
     const regexp = new RegExp(p, 'i'); // i for case insensitive
 
     if (isPro) {
-      return this.sellerModel.find({
-        email: { $regex: regex },
-        nomEntreprise: { $regex: regexn },
-        pseudo: { $regex: regexp },
-        created_at: { $gte: sd, $lt: ed },
-        isArchived: false,
-        isPro: true,
-      });
+      return this.sellerModel.aggregate([
+        {
+          $match: {
+            email: regex,
+            nomEntreprise: regexn,
+            pseudo: regexp,
+            isArchived: false,
+            created_at: { $gte: sd, $lt: ed },
+            isPro: true,
+          },
+        },
+        {
+          $lookup: {
+            from: 'typeusers',
+            localField: 'typeCompte',
+            foreignField: '_id',
+            // pipeline: [
+            // {
+            //   $match: {
+            //     email: regex,
+            //     nomEntreprise: regexn,
+            //     pseudo: regexp,
+            //     isArchived: false,
+            //   },
+            // },
+            //   { $match: { created_at: { $gte: sd, $lt: ed } } },
+            // ],
+
+            as: 'type',
+          },
+        },
+        { $unwind: '$type' },
+      ]);
     }
-    return this.sellerModel.find({
-      email: { $regex: regex },
-      nomEntreprise: { $regex: regexn },
-      pseudo: { $regex: regexp },
-      created_at: { $gte: sd, $lt: ed },
-      isArchived: false,
-      // isPro: false,
-    });
+    // return this.sellerModel.find({
+    //   email: { $regex: regex },
+    //   nomEntreprise: { $regex: regexn },
+    //   pseudo: { $regex: regexp },
+    //   created_at: { $gte: sd, $lt: ed },
+    //   isArchived: false,
+    //   // isPro: false,
+    // });
+    return this.sellerModel.aggregate([
+      {
+        $match: {
+          email: regex,
+          nomEntreprise: regexn,
+          pseudo: regexp,
+          isArchived: false,
+          created_at: { $gte: sd, $lt: ed },
+        },
+      },
+      {
+        $lookup: {
+          from: 'typeusers',
+          localField: 'typeCompte',
+          foreignField: '_id',
+          // pipeline: [
+          // {
+          //   $match: {
+          //     email: regex,
+          //     nomEntreprise: regexn,
+          //     pseudo: regexp,
+          //     isArchived: false,
+          //   },
+          // },
+          //   { $match: { created_at: { $gte: sd, $lt: ed } } },
+          // ],
+
+          as: 'type',
+        },
+      },
+      { $unwind: '$type' },
+    ]);
   }
 
-  findAll() {
-    return this.sellerModel.find({ isArchived: false }).exec();
+  async findAll() {
+    const sellers = await this.sellerModel.aggregate([
+      {
+        $match: {
+          isArchived: false,
+        },
+      },
+      {
+        $lookup: {
+          from: 'typeusers',
+          localField: 'typeCompte',
+          foreignField: '_id',
+          as: 'type',
+        },
+      },
+      { $unwind: '$type' },
+    ]);
+    return sellers;
   }
 
-  findAllPro() {
-    return this.sellerModel.find({ isPro: true, isArchived: false }).exec();
+  async findAllPro() {
+    const sellers = await this.sellerModel.aggregate([
+      {
+        $match: {
+          isArchived: false,
+          isPro: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'typeusers',
+          localField: 'typeCompte',
+          foreignField: '_id',
+          as: 'type',
+        },
+      },
+      { $unwind: '$type' },
+    ]);
+    return sellers;
   }
 
   async findSellerByEmail(email: string): Promise<Seller> {
@@ -200,11 +290,28 @@ export class SellerService {
   }
 
   async findOne(id: string): Promise<Seller> {
-    const user = await this.sellerModel.findOne({ userId: id }).exec();
+    const realId = new mongoose.Types.ObjectId(id);
+    const user: Seller[] = await this.sellerModel.aggregate([
+      {
+        $match: {
+          userId: realId,
+        },
+      },
+      {
+        $lookup: {
+          from: 'typeusers',
+          localField: 'typeCompte',
+          foreignField: '_id',
+          as: 'type',
+        },
+      },
+      { $unwind: '$type' },
+    ]);
+    console.log(user[0]);
     if (!user) {
       throw new NotFoundException(`Seller ${id} not found!`);
     }
-    return user;
+    return user[0];
   }
 
   async update(
@@ -325,5 +432,20 @@ export class SellerService {
     seller.time_connected = `${diffHrs}h${minutes}min`;
     seller.save();
     return this.usersService.logout(ctx);
+  }
+
+  async findAllAgregate() {
+    const sellersWithTypes = await this.sellerModel.aggregate([
+      {
+        $lookup: {
+          from: 'typeusers',
+          localField: 'typeCompte',
+          foreignField: '_id',
+          as: 'type',
+        },
+      },
+      { $unwind: '$type' },
+    ]);
+    return sellersWithTypes;
   }
 }

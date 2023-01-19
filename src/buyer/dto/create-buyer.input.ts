@@ -29,7 +29,7 @@ export class CreateBuyerInput {
   @Field(() => String, { description: 'Buyer nomEntreprise ' })
   nomEntreprise: string;
   @Field(() => String, { description: 'Buyer typeCompte ', nullable: true })
-  typeCompte: TypeCompte;
+  typeCompte: MongooseSchema.Types.ObjectId;
   @Field(() => String, { description: 'Buyer adresse ' })
   adresse: string;
   @Field(() => String, { description: 'Buyer company adresse ' })

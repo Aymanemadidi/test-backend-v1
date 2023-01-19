@@ -3,6 +3,7 @@ import { Schema as MongooseSchema } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Role } from '../../roles/enums/role.enum';
 import { TypeVendeur, TypeCompte } from '../../enums';
+import { TypeUser } from 'src/type-users/entities/type-user.entity';
 
 export enum StatutSeller {
   ACTIF = 'actif',
@@ -60,7 +61,7 @@ export class Seller {
   groupe: string;
   @Prop()
   @Field(() => String, { description: 'Seller typeCompte ', nullable: true })
-  typeCompte: TypeCompte;
+  typeCompte: MongooseSchema.Types.ObjectId;
   @Prop()
   @Field(() => String, { description: 'Seller statutLegal ', nullable: true })
   statutLegal: string;
@@ -82,6 +83,24 @@ export class Seller {
     nullable: true,
   })
   refundAdresse: string;
+  @Prop()
+  @Field(() => String, {
+    description: 'Seller refund adresse ',
+    nullable: true,
+  })
+  refundPays: string;
+  @Prop()
+  @Field(() => String, {
+    description: 'Seller refund pays ',
+    nullable: true,
+  })
+  refundCodePostal: string;
+  @Prop()
+  @Field(() => String, {
+    description: 'Seller refund Code postal ',
+    nullable: true,
+  })
+  refundVille: string;
   @Prop()
   @Field(() => String, { description: 'Seller number of employees ' })
   numberOfEmployees: string;
@@ -113,6 +132,7 @@ export class Seller {
   @Prop()
   @Field(() => String, { description: 'Seller IBAN ', nullable: true })
   IBAN: string;
+  @Prop()
   @Field(() => String, { description: 'Seller departement ', nullable: true })
   departement: string;
   @Prop()
@@ -157,6 +177,9 @@ export class Seller {
   @Prop()
   @Field(() => Boolean, { nullable: true })
   isArchived: boolean;
+  @Prop()
+  @Field(() => TypeUser, { nullable: true })
+  type: TypeUser;
 }
 
 export const SellerSchema = SchemaFactory.createForClass(Seller);

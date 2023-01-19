@@ -15,7 +15,9 @@ export class TypeUsersResolver {
   @UseGuards(JwtAuthGuard)
   @Roles([Role.ADMIN, Role.SUPADMIN])
   @Mutation(() => TypeUser)
-  createTypeUser(@Args('createTypeUserInput') createTypeUserInput: CreateTypeUserInput) {
+  createTypeUser(
+    @Args('createTypeUserInput') createTypeUserInput: CreateTypeUserInput,
+  ) {
     return this.typeUsersService.create(createTypeUserInput);
   }
 
@@ -28,18 +30,30 @@ export class TypeUsersResolver {
   findOne(@Args('_id', { type: () => String }) id: string) {
     return this.typeUsersService.findOne(id);
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Roles([Role.ADMIN, Role.SUPADMIN])
   @Mutation(() => TypeUser)
-  updateTypeUser(@Args('updateTypeUserInput') updateTypeUserInput: UpdateTypeUserInput) {
-    return this.typeUsersService.update(updateTypeUserInput._id, updateTypeUserInput);
+  updateTypeUser(
+    @Args('updateTypeUserInput') updateTypeUserInput: UpdateTypeUserInput,
+  ) {
+    return this.typeUsersService.update(
+      updateTypeUserInput._id,
+      updateTypeUserInput,
+    );
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Roles([Role.ADMIN, Role.SUPADMIN])
-  @Mutation(() => TypeUser)
+  @Mutation(() => Boolean)
   removeTypeUser(@Args('_id') id: string) {
     return this.typeUsersService.remove(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles([Role.ADMIN, Role.SUPADMIN])
+  @Mutation(() => Boolean)
+  removeAllTypes() {
+    return this.typeUsersService.removeAll();
   }
 }

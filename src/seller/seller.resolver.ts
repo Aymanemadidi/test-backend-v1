@@ -100,4 +100,11 @@ export class SellerResolver {
   logoutSeller(@Context() ctx: any) {
     return this.sellerService.logout(ctx);
   }
+
+  @UseGuards(JwtRtAuthGuard)
+  @Roles([Role.ADMIN, Role.SUPADMIN])
+  @Query(() => [Seller], { name: 'sellersWithTypes' })
+  findAllAgregate() {
+    return this.sellerService.findAllAgregate();
+  }
 }

@@ -9,7 +9,7 @@ import { UpdateBuyerInput } from './dto/update-buyer.input';
 import { LoginBuyerInput } from './dto/login-buyer.input';
 import { Buyer, StatutBuyer } from './entities/buyer.entity';
 import { AuthService } from '../common/auth/services/auth.service';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
@@ -117,6 +117,8 @@ export class BuyerService {
     createBuyerInput.isConnected = true;
     createBuyerInput.statut = StatutBuyer.NEW;
     createBuyerInput.userId = buyerUser._id;
+    const typeId = createBuyerInput.typeCompte;
+    createBuyerInput.typeCompte = typeId;
     const pseudo = `${createBuyerInput.nomEntreprise.slice(
       0,
       3,
@@ -156,17 +158,46 @@ export class BuyerService {
     const regexn = new RegExp(n, 'i'); // i for case insensitive
     const regexp = new RegExp(p, 'i'); // i for case insensitive
 
-    return this.buyerModel.find({
-      email: { $regex: regex },
-      nomEntreprise: { $regex: regexn },
-      pseudo: { $regex: regexp },
-      created_at: { $gte: sd, $lt: ed },
-      isArchived: false,
-    });
+    return this.buyerModel.aggregate([
+      {
+        $match: {
+          email: regex,
+          nomEntreprise: regexn,
+          pseudo: regexp,
+          isArchived: false,
+          created_at: { $gte: sd, $lt: ed },
+        },
+      },
+      {
+        $lookup: {
+          from: 'typeusers',
+          localField: 'typeCompte',
+          foreignField: '_id',
+          as: 'type',
+        },
+      },
+      { $unwind: '$type' },
+    ]);
   }
 
-  findAll() {
-    return this.buyerModel.find({ isArchived: false }).exec();
+  async findAll() {
+    const buyers = await this.buyerModel.aggregate([
+      {
+        $match: {
+          isArchived: false,
+        },
+      },
+      {
+        $lookup: {
+          from: 'typeusers',
+          localField: 'typeCompte',
+          foreignField: '_id',
+          as: 'type',
+        },
+      },
+      { $unwind: '$type' },
+    ]);
+    return buyers;
   }
 
   async findBuyerByEmail(email: string): Promise<Buyer> {
@@ -178,11 +209,28 @@ export class BuyerService {
   }
 
   async findOne(id: string): Promise<Buyer> {
-    const user = await this.buyerModel.findOne({ userId: id }).exec();
+    const realId = new mongoose.Types.ObjectId(id);
+    const user: Buyer[] = await this.buyerModel.aggregate([
+      {
+        $match: {
+          userId: realId,
+        },
+      },
+      {
+        $lookup: {
+          from: 'typeusers',
+          localField: 'typeCompte',
+          foreignField: '_id',
+          as: 'type',
+        },
+      },
+      { $unwind: '$type' },
+    ]);
+    console.log(user[0]);
     if (!user) {
-      throw new NotFoundException(`Buyer ${id} not found!`);
+      throw new NotFoundException(`Seller ${id} not found!`);
     }
-    return user;
+    return user[0];
   }
 
   async update(id: string, updateBuyerInput: UpdateBuyerInput): Promise<Buyer> {

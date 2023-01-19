@@ -35,6 +35,25 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type TypeUser {
+  _id: String!
+
+  """Libelle type utilisateur"""
+  libelle: String!
+
+  """utilisé pour vendeur"""
+  for_seller: Boolean!
+
+  """utilisé pour acheteur"""
+  for_buyer: Boolean!
+
+  """Description type utilisateur"""
+  description: String!
+
+  """TypeUser created_at """
+  created_at: DateTime
+}
+
 type Buyer {
   _id: String!
 
@@ -122,6 +141,7 @@ type Buyer {
   """Buyer Statut """
   statut: String
   isArchived: Boolean
+  type: TypeUser
 }
 
 type Seller {
@@ -190,6 +210,15 @@ type Seller {
   """Seller refund adresse """
   refundAdresse: String
 
+  """Seller refund adresse """
+  refundPays: String
+
+  """Seller refund pays """
+  refundCodePostal: String
+
+  """Seller refund Code postal """
+  refundVille: String
+
   """Seller number of employees """
   numberOfEmployees: String!
 
@@ -245,6 +274,7 @@ type Seller {
   """Seller verified status """
   verified: Boolean
   isArchived: Boolean
+  type: TypeUser
 }
 
 type LoggedUserOutput {
@@ -308,25 +338,6 @@ type Marque {
   statut: String
 }
 
-type TypeUser {
-  _id: String!
-
-  """Libelle type utilisateur"""
-  libelle: String!
-
-  """utilisé pour vendeur"""
-  for_seller: Boolean!
-
-  """utilisé pour acheteur"""
-  for_buyer: Boolean!
-
-  """Description type utilisateur"""
-  description: String!
-
-  """TypeUser created_at """
-  created_at: DateTime
-}
-
 type ModesPaiement {
   _id: String!
 
@@ -356,6 +367,7 @@ type Query {
   sellersPro: [Seller!]!
   sellersOcc(email: String!, nomEntreprise: String!, pseudo: String!, startDate: String!, endDate: String!, isPro: Boolean): [Seller!]!
   seller(_id: String!): Seller!
+  sellersWithTypes: [Seller!]!
   marques: [Marque!]!
   marque(_id: String!): Marque!
   typeUsers: [TypeUser!]!
@@ -387,10 +399,12 @@ type Mutation {
   logoutSeller: Boolean!
   createMarque(createMarqueInput: CreateMarqueInput!): Marque!
   updateMarque(updateMarqueInput: UpdateMarqueInput!): Marque!
-  removeMarque(_id: String!): Marque!
+  removeMarque(_id: String!): Boolean!
+  removeAll: Boolean!
   createTypeUser(createTypeUserInput: CreateTypeUserInput!): TypeUser!
   updateTypeUser(updateTypeUserInput: UpdateTypeUserInput!): TypeUser!
-  removeTypeUser(_id: String!): TypeUser!
+  removeTypeUser(_id: String!): Boolean!
+  removeAllTypes: Boolean!
   createModesPaiement(createModesPaiementInput: CreateModesPaiementInput!): ModesPaiement!
   updateModesPaiement(updateModesPaiementInput: UpdateModesPaiementInput!): ModesPaiement!
   removeModesPaiement(_id: String!): ModesPaiement!
@@ -722,6 +736,18 @@ input CreateSellerInput {
   statut_moderation: Boolean!
   statut: String!
   isArchived: Boolean!
+
+  """Seller refund adresse """
+  refundAdresse: String!
+
+  """Seller refund adresse """
+  refundPays: String!
+
+  """Seller refund pays """
+  refundCodePostal: String!
+
+  """Seller refund Code postal """
+  refundVille: String!
 }
 
 input UpdateSellerInput {
@@ -824,6 +850,18 @@ input UpdateSellerInput {
   statut_moderation: Boolean
   statut: String
   isArchived: Boolean
+
+  """Seller refund adresse """
+  refundAdresse: String
+
+  """Seller refund adresse """
+  refundPays: String
+
+  """Seller refund pays """
+  refundCodePostal: String
+
+  """Seller refund Code postal """
+  refundVille: String
 }
 
 input LoginSellerInput {

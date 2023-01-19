@@ -3,6 +3,7 @@ import { Schema as MongooseSchema } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Role } from '../../roles/enums/role.enum';
 import { TypeVendeur, TypeCompte, Civilite } from '../../enums';
+import { TypeUser } from 'src/type-users/entities/type-user.entity';
 
 export enum StatutBuyer {
   ACTIF = 'actif',
@@ -80,7 +81,7 @@ export class Buyer {
   numeroSiret: number;
   @Prop()
   @Field(() => String, { description: 'Buyer typeCompte ', nullable: true })
-  typeCompte: TypeCompte;
+  typeCompte: MongooseSchema.Types.ObjectId;
   @Prop()
   @Field(() => String, { description: 'Buyer civilite ', nullable: true })
   civilite: Civilite;
@@ -115,6 +116,9 @@ export class Buyer {
   @Prop()
   @Field(() => Boolean, { nullable: true })
   isArchived: boolean;
+  @Prop()
+  @Field(() => TypeUser, { nullable: true })
+  type: TypeUser;
 }
 
 export const BuyerSchema = SchemaFactory.createForClass(Buyer);

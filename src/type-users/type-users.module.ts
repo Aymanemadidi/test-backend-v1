@@ -14,7 +14,6 @@ import { TypeUser, TypeUserSchema } from './entities/type-user.entity';
         schema: TypeUserSchema,
       },
     ]),
-    
   ],
   providers: [TypeUsersResolver, TypeUsersService],
   exports: [TypeUsersService],

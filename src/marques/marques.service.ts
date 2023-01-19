@@ -17,6 +17,7 @@ export class MarquesService {
   ) {}
 
   async create(createMarqueInput: CreateMarqueInput): Promise<Marque> {
+    console.log(createMarqueInput);
     const marque = await this.MarqueModel.findOne({
       libelle: createMarqueInput.libelle,
     }).exec();
@@ -68,6 +69,11 @@ export class MarquesService {
       throw new NotFoundException(`La marque ${id} n'existe pas!`);
     }
     marque.remove();
+    return true;
+  }
+
+  async removeAll() {
+    await this.MarqueModel.remove({}).exec();
     return true;
   }
 }

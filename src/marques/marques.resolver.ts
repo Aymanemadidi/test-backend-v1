@@ -40,8 +40,15 @@ export class MarquesResolver {
 
   @UseGuards(JwtAuthGuard)
   @Roles([Role.ADMIN, Role.SUPADMIN])
-  @Mutation(() => Marque)
+  @Mutation(() => Boolean)
   removeMarque(@Args('_id') id: string) {
     return this.marquesService.remove(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles([Role.ADMIN, Role.SUPADMIN])
+  @Mutation(() => Boolean)
+  removeAll() {
+    return this.marquesService.removeAll();
   }
 }
