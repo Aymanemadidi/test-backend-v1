@@ -38,7 +38,7 @@ export class SellerService {
     const user = await this.userModel
       .findOne({ email: createSellerInput.email })
       .exec();
-    if (user) {
+    if (user && createSellerInput.role !== 'BuyerSeller') {
       throw new BadRequestException('This Email already exists');
     }
     const saltOrRounds = 10;

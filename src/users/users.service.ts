@@ -56,8 +56,8 @@ export class UsersService {
       finalUser.created_at = new Date();
     }
     finalUser.save();
-    const tokens = await this.authService.generateUserCredentials(finalUser);
-    await this.updateRtHash(finalUser.id, tokens.refresh_token);
+    // const tokens = await this.authService.generateUserCredentials(finalUser);
+    // await this.updateRtHash(finalUser.id, tokens.refresh_token);
     return finalUser;
   }
 
@@ -668,6 +668,17 @@ export class UsersService {
         seller.last_connected = new Date();
         seller.save();
       } else if (user.role === 'Buyer') {
+        const buyer = await this.buyerModel.findOne({
+          email: loginUserInput.email,
+        });
+        buyer.last_connected = new Date();
+        buyer.save();
+      } else if (user.role === 'BuyerSeller') {
+        const seller = await this.sellerModel.findOne({
+          email: loginUserInput.email,
+        });
+        seller.last_connected = new Date();
+        seller.save();
         const buyer = await this.buyerModel.findOne({
           email: loginUserInput.email,
         });

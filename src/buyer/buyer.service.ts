@@ -34,15 +34,9 @@ export class BuyerService {
     const user = await this.userModel
       .findOne({ email: createBuyerInput.email })
       .exec();
-    if (user) {
+    if (user && createBuyerInput.role !== 'BuyerSeller') {
       throw new BadRequestException('This Email already exists');
     }
-    // const buyer = await this.buyerModel
-    //   .findOne({ email: createBuyerInput.email })
-    //   .exec();
-    // if (buyer) {
-    //   throw new BadRequestException('This Email already exists');
-    // }
     const saltOrRounds = 10;
     const hash = await bcrypt.hash(createBuyerInput.password, saltOrRounds);
     createBuyerInput.password = hash;
