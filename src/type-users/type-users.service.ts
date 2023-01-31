@@ -8,12 +8,14 @@ import { Model } from 'mongoose';
 import { CreateTypeUserInput } from './dto/create-type-user.input';
 import { UpdateTypeUserInput } from './dto/update-type-user.input';
 import { TypeUser } from './entities/type-user.entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class TypeUsersService {
   constructor(
     @InjectModel(TypeUser.name)
     private readonly TypeUserModel: Model<TypeUser>,
+    private readonly usersService: UsersService,
   ) {}
 
   async create(createTypeUserInput: CreateTypeUserInput): Promise<TypeUser> {
@@ -49,7 +51,15 @@ export class TypeUsersService {
     const typeuser = await this.TypeUserModel.findOne({
       libelle: updateTypeUserInput.libelle,
     }).exec();
-    console.log(updateTypeUserInput);
+    // if (
+    //   updateTypeUserInput.for_buyer !== typeuser.for_buyer &&
+    //   updateTypeUserInput.for_seller !== typeuser.for_seller
+    // ) {
+    //   const check = await this.checkType(typeuser.libelle);
+    //   if (check) {
+    //     throw new BadRequestException("")
+    //   }
+    // }
     if (updateTypeUserInput?.libelle) {
       if (
         updateTypeUserInput?.for_buyer &&
@@ -82,5 +92,20 @@ export class TypeUsersService {
   async removeAll() {
     await this.TypeUserModel.remove({}).exec();
     return true;
+  }
+
+  async checkType(type: string) {
+    let s = 0;
+    let b = 0;
+    const users = await this.usersService.usersWithAgregation();
+    for (const u of users) {
+      if (u.seller?.type?.libelle === type) {
+        s++;
+      } else if (u.buyer?.type?.libelle === type) {
+        b++;
+      }
+    }
+
+    return [s, b];
   }
 }

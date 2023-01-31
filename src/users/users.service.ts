@@ -1,11 +1,9 @@
 import {
   BadRequestException,
   ForbiddenException,
-  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-  forwardRef,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserInput } from './dto/create-user.input';
@@ -13,14 +11,12 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { LoginUserInput } from './dto/login-user.input';
 import { User } from './entities/user.entity';
 import { AuthService } from '../common/auth/services/auth.service';
-import mongoose, { Model } from 'mongoose';
+import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 // import { CreateSellerInput } from 'src/seller/dto/create-seller.input';
 // import { UpdateSellerInput } from 'src/seller/dto/update-seller.input';
 import * as argon from 'argon2';
 import { Tokens } from '../common/auth/types';
-import { BuyerService } from '../buyer/buyer.service';
-import { SellerService } from '../seller/seller.service';
 import { Buyer } from '../buyer/entities/buyer.entity';
 import { Seller } from '../seller/entities/seller.entity';
 import { serialize } from 'cookie';
@@ -40,6 +36,10 @@ export class UsersService {
     private readonly jwtService: JwtService,
     private config: ConfigService,
   ) {}
+  /*
+    create(createUserInput)
+    saves the user in the users collection and returns it.
+  */
   async create(createUserInput: CreateUserInput) {
     const user = await this.userModel
       .findOne({ email: createUserInput.email })
@@ -61,10 +61,18 @@ export class UsersService {
     return finalUser;
   }
 
+  /*
+    findAll()
+    returns all users.
+  */
   findAll() {
     return this.userModel.find().exec();
   }
 
+  /*
+    findAllAdmins()
+    returns all admins.
+  */
   async findAllAdmins() {
     try {
       const admins = await this.userModel.find({ role: 'Admin' });
@@ -77,6 +85,10 @@ export class UsersService {
     }
   }
 
+  /*
+    findByEmail(email: string)
+    return the user with the given email.
+  */
   async findByEmail(email: string): Promise<User> {
     const user = await this.userModel.findOne({ email }).exec();
     if (!user) {
@@ -85,6 +97,22 @@ export class UsersService {
     return user;
   }
 
+  /*
+    findAllWithOccurence(arguments listed below...)
+    argumets of findAllWithOccurence:
+      email: string
+      nomEntreprise: string
+      pseudo: string
+      startDate: string
+      endDate: string
+      statut: string
+      type: string
+
+      -Filters all the users by the given args.
+      -If all given fields are empty it returns all the users without filters.
+      -It returns an an array containing the admins followed by the sellers followed by the buyers (see below)
+      - usersOcc: [{admin1}, {admin2}, {seller1}, {buyer1},... ]
+  */
   async findAllWithOccurence(
     email,
     nomEntreprise,
@@ -521,6 +549,19 @@ export class UsersService {
     // return this.findAll2();
   }
 
+  /*
+    findAllAdminsOccurence(arguments listed below...)
+    argumets of findAllWithOccurence:
+      email: string
+      startDate: string
+      endDate: string
+      statut: string
+
+      -Filters all the admins by the given users.
+      -If all given fields are empty it returns all the admins without filters.
+      -It returns an an array containing the admins followed by the sellers followed by the buyers (see below)
+      - adminsOcc: [{admin1}, {admin2},... ]
+  */
   findAdminsWithOccurence(
     email: string,
     startDate: string,
@@ -558,7 +599,14 @@ export class UsersService {
     });
   }
 
-  async findAll2() {
+  /*
+    usersWithAgregation()
+
+    -Find all users with the use of agregations
+    -It returns an an array containing the admins followed by the sellers followed by the buyers (see below)
+    -usersWithAgregation: [{admin1}, {admin2}, {seller1}, {buyer1},...]
+  */
+  async usersWithAgregation() {
     const admins = await this.userModel.find({
       role: 'Admin',
     });
@@ -609,9 +657,13 @@ export class UsersService {
     return [...admins, ...sellers, ...buyers];
   }
 
+  /*
+    findOne(id: string)
+
+    -Find the user with the given id
+    -It returns the user with the given id
+  */
   async findOne(id: string): Promise<User> {
-    // console.log(typeof id);
-    // const _id = new mongoose.Types.ObjectId(id);
     const user = await this.userModel.findOne({ _id: id }).exec();
     if (!user) {
       throw new NotFoundException(`User ${id} not found!`);
@@ -619,6 +671,12 @@ export class UsersService {
     return user;
   }
 
+  /*
+    update(id: string, updateUserInput: UpdateUserInput)
+
+    -Updates the user with the given id with the updates given in updateUserInput
+    -It returns the updated user
+  */
   async update(id: string, updateUserInput: UpdateUserInput): Promise<User> {
     const existingUser = await this.userModel.findByIdAndUpdate(
       { _id: id },
@@ -632,6 +690,12 @@ export class UsersService {
     return existingUser;
   }
 
+  /*
+    remove(id: string)
+
+    -Removes the user with the given id with the updates given in updateUserInput
+    -Returns true if the user is removed or throws an exception if the id given does not match any user. 
+  */
   async remove(id: string) {
     const user = await this.userModel.findOne({ _id: id }).exec();
     if (!user) {
@@ -649,6 +713,17 @@ export class UsersService {
     user.remove();
     return true;
   }
+
+  /*
+    LoginUser(loginUserInput: LoginUserInput)
+
+    -updates the last_connected fields in the respective collections
+    -generates tokens based on the user credentials
+    -generates the cookies and send's them with the response
+    -sets the headers fors CORS
+    -updates the hash of the refresh token stroed in the DB (not used yet)
+    -returns the loged in user
+  */
 
   async loginUser(loginUserInput: LoginUserInput, ctx: any) {
     const user = await this.authService.validateUser(
@@ -716,6 +791,15 @@ export class UsersService {
     }
   }
 
+  /*
+    Logout(loginUserInput: LoginUserInput)
+
+    -checks if the access_token is in the request
+    -decodes the acess token to get the payload
+    -sets the hash of the refresh token null (not used yet)
+    -removes the cookies (not working properly on production for some reason...) 
+    -returns true if no exception was thrown
+  */
   async logout(ctx: any): Promise<boolean> {
     // update many to prevent spaming the logout button?
     const at = ctx.req.cookies['access_token'];
@@ -744,6 +828,12 @@ export class UsersService {
     return true;
   }
 
+  /*
+    refreshTokens(id: string, rt: string)
+
+    -verifys if the given refresh token is valid with the refresh token in the DB
+    -returns a new set of tokens
+  */
   async refreshTokens(id: string, rt: string): Promise<Tokens> {
     const user = await this.userModel.findOne({
       _id: id,
@@ -768,15 +858,26 @@ export class UsersService {
     return tokens;
   }
 
+  /**
+    updateRtHash(id: number, rt: string)
+    -updates the hash of the refresh token
+    -returns void (nothing)
+
+   */
   async updateRtHash(id: number, rt: string): Promise<void> {
     const hash = await argon.hash(rt);
     await this.userModel.updateOne({ _id: id }, { hashed_rt: hash });
   }
 
-  async archive(userId: string): Promise<boolean> {
+  /**
+    archive(id: string)
+    -archives the user with the given id
+    -returns true if no exception was thrown
+   */
+  async archive(id: string): Promise<boolean> {
     // update many to prevent spaming the logout button?
     const user = await this.userModel.updateOne(
-      { _id: userId },
+      { _id: id },
       {
         isArchived: true, // TODO
       },
@@ -788,6 +889,11 @@ export class UsersService {
     return true;
   }
 
+  /**
+    getMe(ctx: any)
+    -takes the graphql execution context 
+    -returns the loged in user if no exception was thrown
+   */
   async getMe(ctx: any) {
     console.log(ctx.req.cookies);
     const at = ctx.req.cookies['access_token'];

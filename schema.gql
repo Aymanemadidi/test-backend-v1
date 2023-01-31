@@ -352,10 +352,51 @@ type ModesPaiement {
   statut: String
 }
 
+type Category {
+  _id: String!
+
+  """Nom category"""
+  name: String!
+
+  """Description category"""
+  description: String!
+
+  """category created_at """
+  created_at: DateTime
+  statut: String
+
+  """category parent """
+  parent: String
+
+  """subcategories of the category"""
+  subCategories: [String!]
+}
+
+type CategoryAgr {
+  _id: String!
+
+  """Nom category"""
+  name: String
+
+  """Description category"""
+  description: String
+
+  """category created_at """
+  created_at: DateTime
+  statut: String
+
+  """category parent """
+  parent: String
+
+  """subcategories of the category"""
+  subCategories: [String!]
+  sub: [CategoryAgr!]!
+}
+
 type Query {
   users: [User!]!
   admins: [User!]!
-  users2: [AllUsersOutput!]!
+  usersWithAgregation: [AllUsersOutput!]!
   adminsOcc(email: String!, startDate: String!, endDate: String!, statut: String!): [AllUsersOutput!]!
   usersOcc(email: String!, nomEntreprise: String!, pseudo: String!, startDate: String!, endDate: String!, statut: String!, type: String!): [AllUsersOutput!]!
   user(_id: String!): [User!]!
@@ -372,8 +413,12 @@ type Query {
   marque(_id: String!): Marque!
   typeUsers: [TypeUser!]!
   typeUser(_id: String!): TypeUser!
+  usersWithType(type: String!): [String!]!
   modesPaiement: [ModesPaiement!]!
   modePaiement(_id: String!): ModesPaiement!
+  categories: [Category!]!
+  categoriesAgr: [CategoryAgr!]!
+  category(id: Int!): Category!
 }
 
 type Mutation {
@@ -407,7 +452,10 @@ type Mutation {
   removeAllTypes: Boolean!
   createModesPaiement(createModesPaiementInput: CreateModesPaiementInput!): ModesPaiement!
   updateModesPaiement(updateModesPaiementInput: UpdateModesPaiementInput!): ModesPaiement!
-  removeModesPaiement(_id: String!): ModesPaiement!
+  removeModesPaiement(_id: String!): Boolean!
+  createCategory(createCategoryInput: CreateCategoryInput!): Category!
+  updateCategory(updateCategoryInput: UpdateCategoryInput!): Boolean!
+  removeCategory(id: String!): Boolean!
 }
 
 input CreateUserInput {
@@ -661,9 +709,6 @@ input CreateSellerInput {
   """Seller fix number """
   fixNumber: Float!
 
-  """Seller role"""
-  role: String!
-
   """Seller Siret number """
   numeroSiret: Int!
 
@@ -774,9 +819,6 @@ input UpdateSellerInput {
 
   """Seller fix number """
   fixNumber: Float
-
-  """Seller role"""
-  role: String
 
   """Seller Siret number """
   numeroSiret: Int
@@ -929,4 +971,39 @@ input UpdateModesPaiementInput {
   description: String
   _id: String!
   statut: String!
+}
+
+input CreateCategoryInput {
+  """Nom category"""
+  name: String!
+
+  """Description category"""
+  description: String!
+
+  """category created_at """
+  created_at: DateTime
+
+  """category parent """
+  parent: String
+
+  """subcategories of the category"""
+  subCategories: [String!]
+}
+
+input UpdateCategoryInput {
+  """Nom category"""
+  name: String
+
+  """Description category"""
+  description: String
+
+  """category created_at """
+  created_at: DateTime
+
+  """category parent """
+  parent: String
+
+  """subcategories of the category"""
+  subCategories: [String!]
+  _id: String!
 }

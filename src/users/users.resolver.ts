@@ -67,9 +67,9 @@ export class UsersResolver {
 
   @UseGuards(JwtAuthGuard)
   @Roles([Role.ADMIN, Role.SUPADMIN])
-  @Query(() => [AllUsersOutput], { name: 'users2' })
+  @Query(() => [AllUsersOutput], { name: 'usersWithAgregation' })
   findAll2() {
-    return this.usersService.findAll2();
+    return this.usersService.usersWithAgregation();
   }
 
   @UseGuards(JwtAuthGuard)

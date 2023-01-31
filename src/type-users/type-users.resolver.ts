@@ -56,4 +56,10 @@ export class TypeUsersResolver {
   removeAllTypes() {
     return this.typeUsersService.removeAll();
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Query(() => [String], { name: 'usersWithType' })
+  checkType(@Args('type') type: string) {
+    return this.typeUsersService.checkType(type);
+  }
 }

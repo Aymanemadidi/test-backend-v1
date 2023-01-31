@@ -18,12 +18,16 @@ import { LoggedSellerOutput } from './dto/loged-seller.output';
 import { serialize } from 'cookie';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { Buyer } from 'src/buyer/entities/buyer.entity';
+import { Role } from 'src/roles/enums/role.enum';
 
 @Injectable()
 export class SellerService {
   constructor(
     @InjectModel(Seller.name)
     private readonly sellerModel: Model<Seller>,
+    @InjectModel(Buyer.name)
+    private readonly buyerModel: Model<Buyer>,
     @InjectModel(User.name)
     private readonly userModel: Model<User>,
     private readonly authService: AuthService,
@@ -31,6 +35,17 @@ export class SellerService {
     private readonly jwtService: JwtService,
     private config: ConfigService,
   ) {}
+
+  /*
+    create(createUserInput)
+    -saves the seller in the users collection and the sellers collection.
+    -saves the seller in the buyer collection (because all sellers are buyers)
+    -generates tokens based on the seller credentials
+    -generates the cookies and send's them with the response
+    -sets the headers fors CORS
+    -updates the hash of the refresh token stroed in the DB (not used yet)
+    -returns the loged in seller 
+  */
   async create(
     createSellerInput: CreateSellerInput,
     ctx: any,
@@ -44,14 +59,12 @@ export class SellerService {
     const saltOrRounds = 10;
     const hash = await bcrypt.hash(createSellerInput.password, saltOrRounds);
     createSellerInput.password = hash;
+    createSellerInput.role = Role.SELLER;
     const sellerUser = new this.userModel(createSellerInput);
     sellerUser.save();
-    // const d = new Date();
-    // const currentDate = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
     createSellerInput.created_at = new Date();
     createSellerInput.last_connected = new Date();
     createSellerInput.isConnected = true;
-    // createSellerInput.isPro = false;
     createSellerInput.statut_moderation = false;
     createSellerInput.statut = StatutSeller.NEW;
     createSellerInput.userId = sellerUser._id;
@@ -69,6 +82,10 @@ export class SellerService {
     console.log('pseudo: ', createSellerInput.pseudo);
     const finalUser = new this.sellerModel(createSellerInput);
     finalUser.save();
+    // for buyer colection
+    createSellerInput.role = Role.BUYER;
+    const buyerUser = new this.buyerModel(createSellerInput);
+    buyerUser.save();
     const tokens = await this.authService.generateUserCredentials(sellerUser);
     const serialisedA = serialize('access_token', tokens.access_token, {
       httpOnly: true, //maybe disabling this to be able to send it in authorization header
@@ -98,6 +115,10 @@ export class SellerService {
     return finalUser;
   }
 
+  /**
+    createByAdm(createSellerInput: CreateSellerInput)
+    -same as create but does not set the cookies nor genearate tokens nor update the hash
+   */
   async createByAdm(createSellerInput: CreateSellerInput): Promise<Seller> {
     const user = await this.userModel
       .findOne({ email: createSellerInput.email })
@@ -108,12 +129,12 @@ export class SellerService {
     const saltOrRounds = 10;
     const hash = await bcrypt.hash(createSellerInput.password, saltOrRounds);
     createSellerInput.password = hash;
+    createSellerInput.role = Role.SELLER;
     const sellerUser = new this.userModel(createSellerInput);
     sellerUser.save();
     createSellerInput.created_at = new Date();
     createSellerInput.last_connected = new Date();
     createSellerInput.isConnected = true;
-    // createSellerInput.isPro = false;
     createSellerInput.statut_moderation = false;
     createSellerInput.statut = StatutSeller.NEW;
     createSellerInput.userId = sellerUser._id;
@@ -133,11 +154,30 @@ export class SellerService {
     console.log('pseudo: ', createSellerInput.pseudo);
     const finalUser = new this.sellerModel(createSellerInput);
     finalUser.save();
-    const tokens = await this.authService.generateUserCredentials(sellerUser);
-    await this.usersService.updateRtHash(sellerUser.id, tokens.refresh_token);
+    // for buyer colection
+    createSellerInput.role = Role.BUYER;
+    console.log('createSellerInput', createSellerInput);
+    const buyerUser = new this.buyerModel(createSellerInput);
+    buyerUser.save();
+    // console.log('buyerUser', buyerUser);
     return finalUser;
   }
 
+  /*
+    findAllWithOccurence(arguments listed below...)
+    argumets of findAllWithOccurence:
+      email: string
+      nomEntreprise: string
+      pseudo: string
+      startDate: string
+      endDate: string
+      isPro: boolean
+
+      -Filters all the sellers by the given args.
+      -If all given fields are empty it returns all the sellers without filters.
+      -It returns an an array containing the sellers
+      - sellersOcc: [{seller1}, {seller2},... ]
+  */
   findAllWithOccurence(
     email: string,
     nomEntreprise: string,
@@ -260,6 +300,10 @@ export class SellerService {
     return sellers;
   }
 
+  /**
+   findAllPro()
+   -returns all pro sellers
+   */
   async findAllPro() {
     const sellers = await this.sellerModel.aggregate([
       {

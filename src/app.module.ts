@@ -11,6 +11,7 @@ import { SellerModule } from './seller/seller.module';
 import { MarquesModule } from './marques/marques.module';
 import { TypeUsersModule } from './type-users/type-users.module';
 import { ModesPaiementModule } from './modes-paiement/modes-paiement.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { ModesPaiementModule } from './modes-paiement/modes-paiement.module';
     MarquesModule,
     TypeUsersModule,
     ModesPaiementModule,
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [

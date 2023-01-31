@@ -3,7 +3,10 @@ import { ModesPaiementService } from './modes-paiement.service';
 import { ModesPaiementResolver } from './modes-paiement.resolver';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CommonModule } from 'src/common/common.module';
-import { ModesPaiement, ModesPaiementSchema } from './entities/modes-paiement.entity';
+import {
+  ModesPaiement,
+  ModesPaiementSchema,
+} from './entities/modes-paiement.entity';
 
 @Module({
   imports: [
@@ -14,7 +17,6 @@ import { ModesPaiement, ModesPaiementSchema } from './entities/modes-paiement.en
         schema: ModesPaiementSchema,
       },
     ]),
-    
   ],
   providers: [ModesPaiementResolver, ModesPaiementService],
   exports: [ModesPaiementService],

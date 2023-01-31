@@ -4,9 +4,12 @@ import { TypeUsersResolver } from './type-users.resolver';
 import { CommonModule } from 'src/common/common.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { TypeUser, TypeUserSchema } from './entities/type-user.entity';
+import { UsersModule } from 'src/users/users.module';
+import { UsersService } from 'src/users/users.service';
 
 @Module({
   imports: [
+    UsersModule,
     CommonModule,
     MongooseModule.forFeature([
       {
@@ -15,7 +18,7 @@ import { TypeUser, TypeUserSchema } from './entities/type-user.entity';
       },
     ]),
   ],
-  providers: [TypeUsersResolver, TypeUsersService],
+  providers: [TypeUsersResolver, TypeUsersService, UsersService],
   exports: [TypeUsersService],
 })
 export class TypeUsersModule {}

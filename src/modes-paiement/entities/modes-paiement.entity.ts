@@ -1,9 +1,8 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import {  Schema as MongooseSchema } from 'mongoose';
+import { Schema as MongooseSchema } from 'mongoose';
 
 export enum StatutModePaiement {
- 
   ACTIF = 'actif',
   INACTIF = 'inactif',
 }
@@ -19,10 +18,16 @@ export class ModesPaiement {
   @Field(() => String, { description: 'Description Mode de paiement' })
   description: string;
   @Prop()
-  @Field(() => Date, { description: 'ModesPaiement created_at ', nullable: true })
+  @Field(() => Date, {
+    description: 'ModesPaiement created_at ',
+    nullable: true,
+  })
   created_at: Date;
   @Prop()
-  @Field(() => String, {  nullable: true, defaultValue: StatutModePaiement.INACTIF })
+  @Field(() => String, {
+    nullable: true,
+    defaultValue: StatutModePaiement.INACTIF,
+  })
   statut: StatutModePaiement;
 }
 export const ModesPaiementSchema = SchemaFactory.createForClass(ModesPaiement);

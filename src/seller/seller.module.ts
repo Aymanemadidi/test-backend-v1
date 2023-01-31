@@ -8,6 +8,7 @@ import { CommonModule } from '../common/common.module';
 import { User } from '../users/entities/user.entity';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from 'src/users/users.service';
+import { Buyer, BuyerSchema } from 'src/buyer/entities/buyer.entity';
 
 @Module({
   imports: [
@@ -17,6 +18,12 @@ import { UsersService } from 'src/users/users.service';
       {
         name: Seller.name,
         schema: SellerSchema,
+      },
+    ]),
+    MongooseModule.forFeature([
+      {
+        name: Buyer.name,
+        schema: BuyerSchema,
       },
     ]),
     MongooseModule.forFeature([

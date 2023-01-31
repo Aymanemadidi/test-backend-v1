@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateModesPaiementInput } from './dto/create-modes-paiement.input';
@@ -9,16 +13,18 @@ import { ModesPaiement } from './entities/modes-paiement.entity';
 export class ModesPaiementService {
   constructor(
     @InjectModel(ModesPaiement.name)
-    private readonly ModesPaiementModel: Model<ModesPaiement>,  
+    private readonly ModesPaiementModel: Model<ModesPaiement>,
   ) {}
 
   async create(createModesPaiementInput: CreateModesPaiementInput) {
-    const mode = await this.ModesPaiementModel.findOne({ mode_paiement: createModesPaiementInput.mode_paiement }).exec();
+    const mode = await this.ModesPaiementModel.findOne({
+      mode_paiement: createModesPaiementInput.mode_paiement,
+    }).exec();
     if (mode) {
       throw new BadRequestException('Ce mode de paiement existe déjà');
     }
     createModesPaiementInput.created_at = new Date();
-    const newmode= new this.ModesPaiementModel(createModesPaiementInput);
+    const newmode = new this.ModesPaiementModel(createModesPaiementInput);
     console.log(createModesPaiementInput);
     newmode.save();
     return newmode;
@@ -37,7 +43,9 @@ export class ModesPaiementService {
   }
 
   async update(id: string, updateModesPaiementInput: UpdateModesPaiementInput) {
-    const mode = await this.ModesPaiementModel.findOne({ mode_paiement: updateModesPaiementInput.mode_paiement }).exec();
+    const mode = await this.ModesPaiementModel.findOne({
+      mode_paiement: updateModesPaiementInput.mode_paiement,
+    }).exec();
     if (mode) {
       throw new BadRequestException('Ce mode de paiement existe déjà');
     }
@@ -56,7 +64,7 @@ export class ModesPaiementService {
     const mode = await this.ModesPaiementModel.findOne({ _id: id }).exec();
     if (!mode) {
       throw new NotFoundException(`Le mode de paiement ${id} n'existe pas!`);
-    }   
+    }
     mode.remove();
     return true;
   }

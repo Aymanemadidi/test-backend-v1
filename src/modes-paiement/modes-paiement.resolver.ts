@@ -15,7 +15,10 @@ export class ModesPaiementResolver {
   @UseGuards(JwtAuthGuard)
   @Roles([Role.ADMIN, Role.SUPADMIN])
   @Mutation(() => ModesPaiement)
-  createModesPaiement(@Args('createModesPaiementInput') createModesPaiementInput: CreateModesPaiementInput) {
+  createModesPaiement(
+    @Args('createModesPaiementInput')
+    createModesPaiementInput: CreateModesPaiementInput,
+  ) {
     return this.modesPaiementService.create(createModesPaiementInput);
   }
 
@@ -31,13 +34,19 @@ export class ModesPaiementResolver {
   @UseGuards(JwtAuthGuard)
   @Roles([Role.ADMIN, Role.SUPADMIN])
   @Mutation(() => ModesPaiement)
-  updateModesPaiement(@Args('updateModesPaiementInput') updateModesPaiementInput: UpdateModesPaiementInput) {
-    return this.modesPaiementService.update(updateModesPaiementInput._id, updateModesPaiementInput);
+  updateModesPaiement(
+    @Args('updateModesPaiementInput')
+    updateModesPaiementInput: UpdateModesPaiementInput,
+  ) {
+    return this.modesPaiementService.update(
+      updateModesPaiementInput._id,
+      updateModesPaiementInput,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
   @Roles([Role.ADMIN, Role.SUPADMIN])
-  @Mutation(() => ModesPaiement)
+  @Mutation(() => Boolean)
   removeModesPaiement(@Args('_id') id: string) {
     return this.modesPaiementService.remove(id);
   }
