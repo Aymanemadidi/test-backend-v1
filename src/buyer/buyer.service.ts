@@ -34,6 +34,7 @@ export class BuyerService {
     const user = await this.userModel
       .findOne({ email: createBuyerInput.email })
       .exec();
+    // we check the role here because of "inscription-vendeur-acheteur"
     if (user && createBuyerInput.role !== 'BuyerSeller') {
       throw new BadRequestException('This Email already exists');
     }

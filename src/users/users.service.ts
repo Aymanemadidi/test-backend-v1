@@ -98,20 +98,9 @@ export class UsersService {
   }
 
   /*
-    findAllWithOccurence(arguments listed below...)
-    argumets of findAllWithOccurence:
-      email: string
-      nomEntreprise: string
-      pseudo: string
-      startDate: string
-      endDate: string
-      statut: string
-      type: string
+    findAllWithOccurence(...)
 
       -Filters all the users by the given args.
-      -If all given fields are empty it returns all the users without filters.
-      -It returns an an array containing the admins followed by the sellers followed by the buyers (see below)
-      - usersOcc: [{admin1}, {admin2}, {seller1}, {buyer1},... ]
   */
   async findAllWithOccurence(
     email,
@@ -341,7 +330,6 @@ export class UsersService {
         },
         { $unwind: '$seller' },
       ]);
-      // console.log(sellers);
       const buyers = await this.userModel.aggregate([
         {
           $lookup: {
@@ -416,7 +404,6 @@ export class UsersService {
         },
         { $unwind: '$seller' },
       ]);
-      // console.log(sellers);
       const buyers = await this.userModel.aggregate([
         {
           $lookup: {
@@ -453,7 +440,6 @@ export class UsersService {
         },
         { $unwind: '$buyer' },
       ]);
-      // console.log(buyers);
       return [...sellers, ...buyers];
     }
 
@@ -508,7 +494,6 @@ export class UsersService {
       },
       { $unwind: '$seller' },
     ]);
-    // console.log(sellers);
     const buyers = await this.userModel.aggregate([
       {
         $lookup: {
@@ -546,21 +531,12 @@ export class UsersService {
       { $unwind: '$buyer' },
     ]);
     return [...admins, ...sellers, ...buyers];
-    // return this.findAll2();
   }
 
   /*
-    findAllAdminsOccurence(arguments listed below...)
-    argumets of findAllWithOccurence:
-      email: string
-      startDate: string
-      endDate: string
-      statut: string
+    findAllAdminsOccurence(...)
 
-      -Filters all the admins by the given users.
-      -If all given fields are empty it returns all the admins without filters.
-      -It returns an an array containing the admins followed by the sellers followed by the buyers (see below)
-      - adminsOcc: [{admin1}, {admin2},... ]
+      -Filters all the admins by the given fields.
   */
   findAdminsWithOccurence(
     email: string,
@@ -603,8 +579,6 @@ export class UsersService {
     usersWithAgregation()
 
     -Find all users with the use of agregations
-    -It returns an an array containing the admins followed by the sellers followed by the buyers (see below)
-    -usersWithAgregation: [{admin1}, {admin2}, {seller1}, {buyer1},...]
   */
   async usersWithAgregation() {
     const admins = await this.userModel.find({
@@ -693,8 +667,7 @@ export class UsersService {
   /*
     remove(id: string)
 
-    -Removes the user with the given id with the updates given in updateUserInput
-    -Returns true if the user is removed or throws an exception if the id given does not match any user. 
+    -Removes the user with the given id. Returns true if the user is removed or throws an exception if the id given does not match any user. 
   */
   async remove(id: string) {
     const user = await this.userModel.findOne({ _id: id }).exec();
@@ -717,12 +690,7 @@ export class UsersService {
   /*
     LoginUser(loginUserInput: LoginUserInput)
 
-    -updates the last_connected fields in the respective collections
-    -generates tokens based on the user credentials
-    -generates the cookies and send's them with the response
-    -sets the headers fors CORS
-    -updates the hash of the refresh token stroed in the DB (not used yet)
-    -returns the loged in user
+    -logs the user and returns it
   */
 
   async loginUser(loginUserInput: LoginUserInput, ctx: any) {
@@ -792,13 +760,8 @@ export class UsersService {
   }
 
   /*
-    Logout(loginUserInput: LoginUserInput)
-
-    -checks if the access_token is in the request
-    -decodes the acess token to get the payload
-    -sets the hash of the refresh token null (not used yet)
-    -removes the cookies (not working properly on production for some reason...) 
-    -returns true if no exception was thrown
+    Logout(ctx)
+    -Logs out the user and returns true if no exception was thrown
   */
   async logout(ctx: any): Promise<boolean> {
     // update many to prevent spaming the logout button?
@@ -890,8 +853,7 @@ export class UsersService {
   }
 
   /**
-    getMe(ctx: any)
-    -takes the graphql execution context 
+    getMe(ctx: any) 
     -returns the loged in user if no exception was thrown
    */
   async getMe(ctx: any) {

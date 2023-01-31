@@ -709,6 +709,9 @@ input CreateSellerInput {
   """Seller fix number """
   fixNumber: Float!
 
+  """Seller role"""
+  role: String
+
   """Seller Siret number """
   numeroSiret: Int!
 
@@ -819,6 +822,9 @@ input UpdateSellerInput {
 
   """Seller fix number """
   fixNumber: Float
+
+  """Seller role"""
+  role: String
 
   """Seller Siret number """
   numeroSiret: Int

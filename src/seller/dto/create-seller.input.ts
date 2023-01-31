@@ -22,7 +22,7 @@ export class CreateSellerInput {
   mobileNumber: number;
   @Field(() => Number, { description: 'Seller fix number ' })
   fixNumber: number;
-  // @Field(() => String, { description: 'Seller role' })
+  @Field(() => String, { description: 'Seller role', nullable: true })
   role: Role;
   @Field(() => Int, { description: 'Seller Siret number ' })
   numeroSiret: number;

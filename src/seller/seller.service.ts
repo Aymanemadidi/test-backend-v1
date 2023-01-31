@@ -36,16 +36,6 @@ export class SellerService {
     private config: ConfigService,
   ) {}
 
-  /*
-    create(createUserInput)
-    -saves the seller in the users collection and the sellers collection.
-    -saves the seller in the buyer collection (because all sellers are buyers)
-    -generates tokens based on the seller credentials
-    -generates the cookies and send's them with the response
-    -sets the headers fors CORS
-    -updates the hash of the refresh token stroed in the DB (not used yet)
-    -returns the loged in seller 
-  */
   async create(
     createSellerInput: CreateSellerInput,
     ctx: any,
@@ -53,7 +43,9 @@ export class SellerService {
     const user = await this.userModel
       .findOne({ email: createSellerInput.email })
       .exec();
-    if (user && createSellerInput.role !== 'BuyerSeller') {
+    // we check the role here because of "inscription-vendeur-acheteur"
+    // if (user && createSellerInput.role !== 'BuyerSeller') {
+    if (user) {
       throw new BadRequestException('This Email already exists');
     }
     const saltOrRounds = 10;
@@ -164,19 +156,9 @@ export class SellerService {
   }
 
   /*
-    findAllWithOccurence(arguments listed below...)
-    argumets of findAllWithOccurence:
-      email: string
-      nomEntreprise: string
-      pseudo: string
-      startDate: string
-      endDate: string
-      isPro: boolean
+    findAllWithOccurence(...)
 
       -Filters all the sellers by the given args.
-      -If all given fields are empty it returns all the sellers without filters.
-      -It returns an an array containing the sellers
-      - sellersOcc: [{seller1}, {seller2},... ]
   */
   findAllWithOccurence(
     email: string,
